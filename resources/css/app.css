@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+    }
+
+    body {
+        @apply font-sans antialiased;
+    }
+}
+
+@layer components {
+    .btn-primary-gradient {
+        @apply inline-flex items-center px-4 py-2 bg-gradient-to-r from-[#667eea] to-[#764ba2] text-white font-semibold rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200;
+    }
+
+    .btn-secondary-outline {
+        @apply inline-flex items-center px-4 py-2 border-2 border-[#667eea] text-[#667eea] font-semibold rounded-lg hover:bg-[#667eea] hover:text-white transition-all duration-200;
+    }
+
+    .card-base {
+        @apply bg-white rounded-xl shadow-md border border-gray-200 p-6;
+    }
+
+    .gradient-text {
+        @apply bg-gradient-to-r from-[#667eea] to-[#764ba2] bg-clip-text text-transparent;
+    }
+
+    .focus-ring-primary {
+        @apply focus:outline-none focus:ring-2 focus:ring-[#667eea] focus:ring-offset-2;
+    }
+
+    .input-field {
+        @apply w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-[#667eea] focus:ring-[#667eea] transition-all duration-200;
+    }
+}
