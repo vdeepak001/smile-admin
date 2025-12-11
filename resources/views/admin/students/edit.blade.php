@@ -17,14 +17,20 @@
                         <div>
                             <x-input-label for="college_id" :value="__('Select College')" />
                             <select id="college_id" name="college_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="">Select College</option>
+                                <option value="" data-college-code="">Select College</option>
                                 @foreach($colleges as $college)
-                                    <option value="{{ $college->college_id }}" {{ old('college_id', $student->user->college_id ?? '') == $college->college_id ? 'selected' : '' }}>
-                                        {{ $college->college_name }}
+                                    <option value="{{ $college->college_id }}" data-college-code="{{ $college->college_code ?? '' }}" {{ old('college_id', $student->user->college_id ?? '') == $college->college_id ? 'selected' : '' }}>
+                                        {{ $college->college_name }} @if($college->college_code) [{{ $college->college_code }}] @endif
                                     </option>
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('college_id')" class="mt-2" />
+                        </div>
+
+                        <!-- College Code (Display Only) -->
+                        <div>
+                            <x-input-label for="college_code_display" :value="__('College Code')" />
+                            <input type="text" id="college_code_display" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm bg-gray-100 cursor-not-allowed" value="" disabled readonly placeholder="Select college to see code" />
                         </div>
 
                         <!-- Degree Selection -->
@@ -102,7 +108,7 @@
                                 <div class="space-y-4">
                                     <div>
                                         <x-input-label for="enrollment_no" :value="__('Enrollment No')" />
-                                        <x-text-input id="enrollment_no" name="enrollment_no" type="text" class="mt-1 block w-full bg-gray-100 cursor-not-allowed" :value="old('enrollment_no', $student->enrollment_no)" readonly disabled />
+                                        <x-text-input id="enrollment_no" name="enrollment_no" type="text" class="mt-1 block w-full bg-gray-100 cursor-not-allowed" :value="old('enrollment_no', $student->enrollment_no)" readonly />
                                         <x-input-error :messages="$errors->get('enrollment_no')" class="mt-2" />
                                     </div>
 
@@ -129,7 +135,7 @@
                                                 <option value="{{ $course->course_id }}" 
                                                     {{ in_array($course->course_id, old('course_ids', $student->courses->pluck('course_id')->toArray())) ? 'selected' : '' }}
                                                 >
-                                                    {{ $course->course_name }}
+                                                    {{ $course->course_code ? '[' . $course->course_code . '] ' : '' }}{{ $course->course_name }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -159,4 +165,66 @@
             </div>
         </div>
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const collegeSelect = document.getElementById('college_id');
+            const courseSelect = document.getElementById('course_ids');
+            const collegeCodeDisplay = document.getElementById('college_code_display');
+            const enrollmentInput = document.getElementById('enrollment_no');
+
+            function updateCollegeCode() {
+                const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
+                const collegeCode = selectedOption.getAttribute('data-college-code') || '';
+                
+                if (collegeCode) {
+                    collegeCodeDisplay.value = collegeCode;
+                } else {
+                    collegeCodeDisplay.value = '';
+                    collegeCodeDisplay.placeholder = 'No college code available';
+                }
+                
+                updateEnrollmentNo();
+            }
+
+            function updateEnrollmentNo() {
+                const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
+                const collegeCode = selectedOption.getAttribute('data-college-code') || '';
+                
+                // Get selected courses
+                const selectedCourses = Array.from(courseSelect.selectedOptions);
+                
+                // Extract student ID from current enrollment number or use existing value
+                const currentEnrollment = enrollmentInput.value;
+                const studentId = currentEnrollment.split('_').pop(); // Get last part as ID
+                
+                if (collegeCode && selectedCourses.length > 0) {
+                    // Extract all course codes from selected courses
+                    const courseCodes = [];
+                    selectedCourses.forEach(course => {
+                        const courseText = course.textContent.trim();
+                        const courseCodeMatch = courseText.match(/\[([^\]]+)\]/);
+                        if (courseCodeMatch) {
+                            courseCodes.push(courseCodeMatch[1]);
+                        }
+                    });
+                    
+                    if (courseCodes.length > 0) {
+                        // Combine: COLLEGECODE_COURSE1_COURSE2_COURSE3_USERID
+                        enrollmentInput.value = `${collegeCode}_${courseCodes.join('_')}_${studentId}`;
+                    } else {
+                        enrollmentInput.value = currentEnrollment; // Keep original if no course codes found
+                    }
+                } else {
+                    enrollmentInput.value = currentEnrollment; // Keep original if no college or courses selected
+                }
+            }
+
+            collegeSelect.addEventListener('change', updateCollegeCode);
+            courseSelect.addEventListener('change', updateEnrollmentNo);
+            
+            // Initialize on load
+            updateCollegeCode();
+        });
+    </script>
 </x-app-layout>

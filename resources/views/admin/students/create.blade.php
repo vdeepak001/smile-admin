@@ -17,10 +17,10 @@
                             {{ __('Select College') }} <span class="text-red-500">*</span>
                         </label>
                         <select id="college_id" name="college_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('college_id') border-red-500 @enderror" required>
-                            <option value="">Select College</option>
+                            <option value="" data-college-code="">Select College</option>
                             @foreach($colleges as $college)
-                                <option value="{{ $college->college_id }}" {{ old('college_id') == $college->college_id ? 'selected' : '' }}>
-                                    {{ $college->college_name }}
+                                <option value="{{ $college->college_id }}" data-college-code="{{ $college->college_code ?? '' }}" {{ old('college_id') == $college->college_id ? 'selected' : '' }}>
+                                    {{ $college->college_name }} @if($college->college_code) [{{ $college->college_code }}] @endif
                                 </option>
                             @endforeach
                         </select>
@@ -134,7 +134,7 @@
                                         {{ __('Enrollment No') }}
                                     </label>
                                     <input type="text" id="enrollment_no" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-500" value="Auto-generated" disabled readonly />
-                                    <p class="mt-1 text-sm text-gray-500">will be automatically generated as ENRO_{College ID}_{User ID} (Preview based on next ID: {{ $nextUserId }})</p>
+                                    <p class="mt-1 text-sm text-gray-500">Will be auto-generated based on college code and course code</p>
                                 </div>
 
 
@@ -162,7 +162,7 @@
                                     >
                                         @foreach($courses as $course)
                                             <option value="{{ $course->course_id }}" {{ in_array($course->course_id, old('course_ids', [])) ? 'selected' : '' }}>
-                                                {{ $course->course_name }}
+                                                {{ $course->course_code ? '[' . $course->course_code . '] ' : '' }}{{ $course->course_name }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -195,20 +195,59 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const collegeSelect = document.getElementById('college_id');
+            const courseSelect = document.getElementById('course_ids');
             const enrollmentInput = document.getElementById('enrollment_no');
+            const collegeCodeDisplay = document.getElementById('college_code_display');
             const nextUserId = {{ $nextUserId }};
 
+            function updateCollegeCode() {
+                const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
+                const collegeCode = selectedOption.getAttribute('data-college-code') || '';
+                
+                if (collegeCode) {
+                    collegeCodeDisplay.value = collegeCode;
+                } else {
+                    collegeCodeDisplay.value = '';
+                    collegeCodeDisplay.placeholder = 'No college code available';
+                }
+                
+                updateEnrollmentNo();
+            }
+
             function updateEnrollmentNo() {
-                const collegeId = collegeSelect.value;
-                if (collegeId) {
-                    enrollmentInput.value = `ENRO_${collegeId}_${nextUserId}`;
+                const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
+                const collegeCode = selectedOption.getAttribute('data-college-code') || '';
+                
+                // Get selected courses
+                const selectedCourses = Array.from(courseSelect.selectedOptions);
+                
+                if (collegeCode && selectedCourses.length > 0) {
+                    // Extract all course codes from selected courses
+                    const courseCodes = [];
+                    selectedCourses.forEach(course => {
+                        const courseText = course.textContent.trim();
+                        const courseCodeMatch = courseText.match(/\[([^\]]+)\]/);
+                        if (courseCodeMatch) {
+                            courseCodes.push(courseCodeMatch[1]);
+                        }
+                    });
+                    
+                    if (courseCodes.length > 0) {
+                        // Combine: COLLEGECODE_COURSE1_COURSE2_COURSE3_USERID
+                        enrollmentInput.value = `${collegeCode}_${courseCodes.join('_')}_${nextUserId}`;
+                    } else {
+                        enrollmentInput.value = 'Auto-generated';
+                    }
                 } else {
                     enrollmentInput.value = 'Auto-generated';
                 }
             }
 
-            collegeSelect.addEventListener('change', updateEnrollmentNo);
-            updateEnrollmentNo();
+            collegeSelect.addEventListener('change', updateCollegeCode);
+            courseSelect.addEventListener('change', updateEnrollmentNo);
+            
+            // Initialize on load
+            updateCollegeCode();
         });
     </script>
 </x-app-layout>

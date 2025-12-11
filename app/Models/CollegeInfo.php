@@ -16,6 +16,7 @@ class CollegeInfo extends Model
 
     protected $fillable = [
         'college_name',
+        'college_code',
         'user_id',
         'contact_person',
         // 'course_id', // Removed

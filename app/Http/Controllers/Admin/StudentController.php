@@ -54,9 +54,34 @@ class StudentController extends Controller
             ]);
 
 
-            $enrollmentNo = 'ENRO_' . $validated['college_id'] . '_' . $user->id;
+
+            // Generate enrollment number using college code and all course codes
+            $college = CollegeInfo::find($validated['college_id']);
+            $collegeCode = $college->college_code ?? 'COL';
+            
+            // Combine all course codes
+            $courseCodes = [];
+            if (!empty($validated['course_ids'])) {
+                foreach ($validated['course_ids'] as $courseId) {
+                    $course = Course::find($courseId);
+                    if ($course && $course->course_code) {
+                        $courseCodes[] = $course->course_code;
+                    }
+                }
+            }
+            
+            // Generate enrollment number: COLLEGECODE_COURSE1_COURSE2_..._USERID
+            if (!empty($courseCodes)) {
+                $enrollmentNo = $collegeCode . '_' . implode('_', $courseCodes) . '_' . $user->id;
+            } else {
+                // Fallback if no courses with codes
+                $enrollmentNo = $collegeCode . '_' . $user->id;
+            }
+            
             \Illuminate\Support\Facades\Log::info('Creating Student', [
                 'college_id' => $validated['college_id'],
+                'college_code' => $collegeCode,
+                'course_codes' => $courseCodes,
                 'user_id' => $user->id,
                 'generated_enrollment_no' => $enrollmentNo
             ]);
@@ -131,12 +156,36 @@ class StudentController extends Controller
 
             $student->user->update($userData);
 
+            // Regenerate enrollment number if college or courses changed
+            $college = CollegeInfo::find($validated['college_id']);
+            $collegeCode = $college->college_code ?? 'COL';
+            
+            // Combine all course codes
+            $courseCodes = [];
+            if (!empty($validated['course_ids'])) {
+                foreach ($validated['course_ids'] as $courseId) {
+                    $course = Course::find($courseId);
+                    if ($course && $course->course_code) {
+                        $courseCodes[] = $course->course_code;
+                    }
+                }
+            }
+            
+            // Generate new enrollment number: COLLEGECODE_COURSE1_COURSE2_..._USERID
+            if (!empty($courseCodes)) {
+                $enrollmentNo = $collegeCode . '_' . implode('_', $courseCodes) . '_' . $student->user_id;
+            } else {
+                // Fallback if no courses with codes
+                $enrollmentNo = $collegeCode . '_' . $student->user_id;
+            }
+
             // Update Student
             $student->update([
                 'degree_id' => $validated['degree_id'] ?? null,
                 'specialization' => $validated['specialization'] ?? null,
                 'year_of_study' => $validated['year_of_study'] ?? null,
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
+                'enrollment_no' => $enrollmentNo,
                 'active_status' => $validated['active_status'] ?? true,
                 'updated_by' => auth()->id(),
             ]);
@@ -276,12 +325,39 @@ class StudentController extends Controller
                             'created_by' => auth()->id(),
                         ]);
 
+
+                        // Generate enrollment number using college code and course code
+                        $college = CollegeInfo::find($data['college_id']);
+                        $collegeCode = $college->college_code ?? 'COL';
+                        
+                        // Get course code from CSV if provided, otherwise use default
+                        $courseCode = 'GEN';
+                        if (!empty($data['course_id'])) {
+                            $course = Course::find($data['course_id']);
+                            $courseCode = $course->course_code ?? 'CRS';
+                        }
+                        
+                        // Get next sequence number for this college+course combination
+                        $lastStudent = Student::whereHas('user', function($query) use ($data) {
+                                $query->where('college_id', $data['college_id']);
+                            })
+                            ->where('enrollment_no', 'LIKE', $collegeCode . '_' . $courseCode . '_%')
+                            ->orderBy('enrollment_no', 'desc')
+                            ->first();
+                        
+                        $nextSequence = 1;
+                        if ($lastStudent && preg_match('/_(\d+)$/', $lastStudent->enrollment_no, $matches)) {
+                            $nextSequence = intval($matches[1]) + 1;
+                        }
+                        
+                        $enrollmentNo = $collegeCode . '_' . $courseCode . '_' . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
+
                         $student = Student::create([
                             'user_id' => $user->id,
                             'degree_id' => !empty($data['degree_id']) ? $data['degree_id'] : null,
                             'specialization' => $data['specialization'] ?? null,
                             'year_of_study' => !empty($data['year_of_study']) ? $data['year_of_study'] : null,
-                            'enrollment_no' => 'ENRO_' . $data['college_id'] . '_' . $user->id,
+                            'enrollment_no' => $enrollmentNo,
                             'date_of_birth' => !empty($data['date_of_birth']) ? $data['date_of_birth'] : null,
                             'active_status' => isset($data['active_status']) ? (bool)$data['active_status'] : true,
                             'created_by' => auth()->id(),

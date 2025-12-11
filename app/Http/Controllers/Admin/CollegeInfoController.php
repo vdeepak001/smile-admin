@@ -52,6 +52,20 @@ class CollegeInfoController extends Controller
         $courseIds = $validated['course_ids'];
         unset($validated['course_ids']);
 
+        // Generate college code from college name (e.g., "Vikram University" -> "VU")
+        if (!empty($validated['college_name']) && empty($validated['college_code'])) {
+            $collegeName = $validated['college_name'];
+            // Split by spaces and get first letter of each word
+            $words = preg_split('/\s+/', trim($collegeName));
+            $collegeCode = '';
+            foreach ($words as $word) {
+                if (!empty($word)) {
+                    $collegeCode .= strtoupper(substr($word, 0, 1));
+                }
+            }
+            $validated['college_code'] = $collegeCode;
+        }
+
         // Create user account for college
         $user = User::create([
             'email' => $email,
@@ -114,6 +128,20 @@ class CollegeInfoController extends Controller
         // Extract course IDs
         $courseIds = $validated['course_ids'];
         unset($validated['course_ids']);
+
+        // Generate college code from college name if name is being updated
+        if (!empty($validated['college_name']) && empty($validated['college_code'])) {
+            $collegeName = $validated['college_name'];
+            // Split by spaces and get first letter of each word
+            $words = preg_split('/\s+/', trim($collegeName));
+            $collegeCode = '';
+            foreach ($words as $word) {
+                if (!empty($word)) {
+                    $collegeCode .= strtoupper(substr($word, 0, 1));
+                }
+            }
+            $validated['college_code'] = $collegeCode;
+        }
 
         // Update user account
         $user = $collegeInfo->user;

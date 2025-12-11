@@ -79,6 +79,7 @@ class Index extends Component
         if ($this->search) {
             $query->where(function ($q) {
                 $q->where('course_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('course_code', 'like', '%' . $this->search . '%')
                     ->orWhere('description', 'like', '%' . $this->search . '%');
             });
         }
@@ -100,6 +101,7 @@ class Index extends Component
         if ($this->search) {
             $baseQuery->where(function ($q) {
                 $q->where('course_name', 'like', '%' . $this->search . '%')
+                    ->orWhere('course_code', 'like', '%' . $this->search . '%')
                     ->orWhere('description', 'like', '%' . $this->search . '%');
             });
         }

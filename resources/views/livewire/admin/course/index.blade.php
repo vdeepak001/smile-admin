@@ -111,9 +111,14 @@
                             <div class="p-6">
                                 <!-- Header with Status -->
                                 <div class="flex items-start justify-between mb-4">
-                                    <h3 class="text-lg font-semibold text-gray-900 truncate pr-2">
-                                        {{ $course->course_name }}
-                                    </h3>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 truncate pr-2">
+                                            {{ $course->course_name }}
+                                        </h3>
+                                        @if ($course->course_code)
+                                            <p class="text-xs text-gray-500 mt-1">Code: {{ $course->course_code }}</p>
+                                        @endif
+                                    </div>
                                     @if ($course->active_status)
                                         <span
                                             class="inline-flex px-3 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full whitespace-nowrap">
@@ -233,6 +238,10 @@
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">Course Name</p>
                                 <p class="font-medium text-gray-900">{{ $selectedCourse->course_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Course Code</p>
+                                <p class="font-medium text-gray-900">{{ $selectedCourse->course_code ?? 'N/A' }}</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">Status</p>

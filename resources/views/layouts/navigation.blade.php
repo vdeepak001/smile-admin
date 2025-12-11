@@ -114,7 +114,7 @@
                     contentClasses="py-1 bg-slate-900 border border-slate-700 text-slate-100">
                     <x-slot name="trigger">
                         <button class="user-menu-btn">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div>{{ Auth::user()->isCollege() ? (Auth::user()->collegeAccount->college_name ?? Auth::user()->name) : Auth::user()->name }}</div>
 
                             <div class="ms-1 inline-block">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +176,7 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-3 border-t border-slate-800">
             <div class="px-4 py-2">
-                <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
+                <div class="font-medium text-base text-white">{{ Auth::user()->isCollege() ? (Auth::user()->collegeAccount->college_name ?? Auth::user()->name) : Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-slate-300">{{ Auth::user()->email }}</div>
             </div>
 

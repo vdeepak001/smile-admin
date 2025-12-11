@@ -102,14 +102,14 @@
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Name / Email
                                     </th>
-                                    <th scope="col"
+                                    <!-- <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Enrollment No
-                                    </th>
-                                    <th scope="col"
+                                    </th> -->
+                                    <!-- <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         College
-                                    </th>
+                                    </th> -->
                                     <th scope="col"
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Phone No
@@ -159,12 +159,12 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <!-- <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 font-semibold">{{ $student->enrollment_no }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        </td> -->
+                                        <!-- <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $student->user->college->college_name ?? 'N/A' }}</div>
-                                        </td>
+                                        </td> -->
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $student->user->phone_number ?? 'N/A' }}</div>
                                         </td>

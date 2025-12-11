@@ -45,6 +45,10 @@
                         <p class="text-lg font-semibold text-gray-900">{{ $course->course_name }}</p>
                     </div>
                     <div>
+                        <p class="text-sm font-medium text-gray-600">Course Code</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $course->course_code ?? 'N/A' }}</p>
+                    </div>
+                    <div>
                         <p class="text-sm font-medium text-gray-600">Status</p>
                         <p class="mt-1">
                             @if ($course->active_status)
