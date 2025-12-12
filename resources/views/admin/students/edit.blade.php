@@ -69,24 +69,28 @@
                             <!-- Start Year -->
                             <div>
                                 <x-input-label for="start_year" :value="__('Start Year')" />
-                                <input type="number" id="start_year" name="start_year" 
-                                       value="{{ old('start_year', $student->start_year) }}" 
-                                       min="1900" max="{{ date('Y') + 10 }}" step="1"
-                                       onwheel="this.blur()" 
-                                       class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                                       placeholder="e.g., 2020">
+                                <select id="start_year" name="start_year" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="">Select Start Year</option>
+                                    @for($year = date('Y') + 10; $year >= 1900; $year--)
+                                        <option value="{{ $year }}" {{ old('start_year', $student->start_year) == $year ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endfor
+                                </select>
                                 <x-input-error :messages="$errors->get('start_year')" class="mt-2" />
                             </div>
 
                             <!-- End Year -->
                             <div>
                                 <x-input-label for="end_year" :value="__('End Year')" />
-                                <input type="number" id="end_year" name="end_year" 
-                                       value="{{ old('end_year', $student->end_year) }}" 
-                                       min="1900" max="{{ date('Y') + 10 }}" step="1"
-                                       onwheel="this.blur()" 
-                                       class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                                       placeholder="e.g., 2024">
+                                <select id="end_year" name="end_year" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="">Select End Year</option>
+                                    @for($year = date('Y') + 10; $year >= 1900; $year--)
+                                        <option value="{{ $year }}" {{ old('end_year', $student->end_year) == $year ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endfor
+                                </select>
                                 <x-input-error :messages="$errors->get('end_year')" class="mt-2" />
                             </div>
                         </div>

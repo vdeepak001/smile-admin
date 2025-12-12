@@ -84,11 +84,14 @@
                             <label for="start_year" class="block text-sm font-medium text-gray-700 mb-2">
                                 {{ __('Start Year') }}
                             </label>
-                            <input type="number" id="start_year" name="start_year" value="{{ old('start_year') }}" 
-                                   min="1900" max="{{ date('Y') + 10 }}" step="1"
-                                   onwheel="this.blur()" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('start_year') border-red-500 @enderror" 
-                                   placeholder="e.g., 2020">
+                            <select id="start_year" name="start_year" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('start_year') border-red-500 @enderror">
+                                <option value="">Select Start Year</option>
+                                @for($year = date('Y') + 10; $year >= 1900; $year--)
+                                    <option value="{{ $year }}" {{ old('start_year') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
                             @error('start_year')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -99,11 +102,14 @@
                             <label for="end_year" class="block text-sm font-medium text-gray-700 mb-2">
                                 {{ __('End Year') }}
                             </label>
-                            <input type="number" id="end_year" name="end_year" value="{{ old('end_year') }}" 
-                                   min="1900" max="{{ date('Y') + 10 }}" step="1"
-                                   onwheel="this.blur()" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('end_year') border-red-500 @enderror" 
-                                   placeholder="e.g., 2024">
+                            <select id="end_year" name="end_year" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('end_year') border-red-500 @enderror">
+                                <option value="">Select End Year</option>
+                                @for($year = date('Y') + 10; $year >= 1900; $year--)
+                                    <option value="{{ $year }}" {{ old('end_year') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
                             @error('end_year')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
