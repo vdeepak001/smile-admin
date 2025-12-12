@@ -11,67 +11,103 @@
                 <form action="{{ route('students.store') }}" method="POST" class="space-y-6">
                     @csrf
 
-                    <!-- College Selection -->
-                    <div>
-                        <label for="college_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Select College') }} <span class="text-red-500">*</span>
-                        </label>
-                        <select id="college_id" name="college_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('college_id') border-red-500 @enderror" required>
-                            <option value="" data-college-code="">Select College</option>
-                            @foreach($colleges as $college)
-                                <option value="{{ $college->college_id }}" data-college-code="{{ $college->college_code ?? '' }}" {{ old('college_id') == $college->college_id ? 'selected' : '' }}>
-                                    {{ $college->college_name }} @if($college->college_code) [{{ $college->college_code }}] @endif
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('college_id')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                    <!-- College, Degree, and Specialization in one row -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- College Selection -->
+                        <div>
+                            <label for="college_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('Select College') }} <span class="text-red-500">*</span>
+                            </label>
+                            <select id="college_id" name="college_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('college_id') border-red-500 @enderror" required>
+                                <option value="" data-college-code="">Select College</option>
+                                @foreach($colleges as $college)
+                                    <option value="{{ $college->college_id }}" data-college-code="{{ $college->college_code ?? '' }}" {{ old('college_id') == $college->college_id ? 'selected' : '' }}>
+                                        {{ $college->college_name }} @if($college->college_code) [{{ $college->college_code }}] @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('college_id')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Degree Selection -->
+                        <div>
+                            <label for="degree_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('Select Degree') }}
+                            </label>
+                            <select id="degree_id" name="degree_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('degree_id') border-red-500 @enderror">
+                                <option value="">Select Degree (Optional)</option>
+                                @foreach($degrees as $degree)
+                                    <option value="{{ $degree->id }}" {{ old('degree_id') == $degree->id ? 'selected' : '' }}>
+                                        {{ $degree->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('degree_id')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Specialization -->
+                        <div>
+                            <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('Specialization') }}
+                            </label>
+                            <input type="text" id="specialization" name="specialization" value="{{ old('specialization') }}" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('specialization') border-red-500 @enderror" 
+                                   placeholder="e.g., Computer Science, Information Technology">
+                            @error('specialization')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
-                    <!-- Degree Selection -->
-                    <div>
-                        <label for="degree_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Select Degree') }}
-                        </label>
-                        <select id="degree_id" name="degree_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('degree_id') border-red-500 @enderror">
-                            <option value="">Select Degree (Optional)</option>
-                            @foreach($degrees as $degree)
-                                <option value="{{ $degree->id }}" {{ old('degree_id') == $degree->id ? 'selected' : '' }}>
-                                    {{ $degree->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('degree_id')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Year of Study, Start Year, and End Year in one row -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Year of Study -->
+                        <div>
+                            <label for="year_of_study" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('Year of Study') }}
+                            </label>
+                            <input type="number" id="year_of_study" name="year_of_study" value="{{ old('year_of_study') }}" 
+                                   min="1" max="10"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('year_of_study') border-red-500 @enderror" 
+                                   placeholder="e.g., 1, 2, 3">
+                            @error('year_of_study')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <!-- Specialization -->
-                    <div>
-                        <label for="specialization" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Specialization') }}
-                        </label>
-                        <input type="text" id="specialization" name="specialization" value="{{ old('specialization') }}" 
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('specialization') border-red-500 @enderror" 
-                               placeholder="e.g., Computer Science, Information Technology">
-                        @error('specialization')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <!-- Start Year -->
+                        <div>
+                            <label for="start_year" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('Start Year') }}
+                            </label>
+                            <input type="number" id="start_year" name="start_year" value="{{ old('start_year') }}" 
+                                   min="1900" max="{{ date('Y') + 10 }}" step="1"
+                                   onwheel="this.blur()" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('start_year') border-red-500 @enderror" 
+                                   placeholder="e.g., 2020">
+                            @error('start_year')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <!-- Year of Study -->
-                    <div>
-                        <label for="year_of_study" class="block text-sm font-medium text-gray-700 mb-2">
-                            {{ __('Year of Study') }}
-                        </label>
-                        <input type="number" id="year_of_study" name="year_of_study" value="{{ old('year_of_study') }}" 
-                               min="1" max="10"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('year_of_study') border-red-500 @enderror" 
-                               placeholder="e.g., 1, 2, 3">
-                        @error('year_of_study')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <!-- End Year -->
+                        <div>
+                            <label for="end_year" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ __('End Year') }}
+                            </label>
+                            <input type="number" id="end_year" name="end_year" value="{{ old('end_year') }}" 
+                                   min="1900" max="{{ date('Y') + 10 }}" step="1"
+                                   onwheel="this.blur()" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('end_year') border-red-500 @enderror" 
+                                   placeholder="e.g., 2024">
+                            @error('end_year')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -134,10 +170,18 @@
                                         {{ __('Enrollment No') }}
                                     </label>
                                     <input type="text" id="enrollment_no" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-500" value="Auto-generated" disabled readonly />
-                                    <p class="mt-1 text-sm text-gray-500">Will be auto-generated based on college code and course code</p>
+                                    <p class="mt-1 text-sm text-gray-500">Will be auto-generated based on college code and start year (e.g., SUI-2022-0001)</p>
                                 </div>
 
-
+                                <div>
+                                    <label for="roll_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                        {{ __('Roll Number') }}
+                                    </label>
+                                    <input type="text" id="roll_number" name="roll_number" value="{{ old('roll_number') }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('roll_number') border-red-500 @enderror" placeholder="e.g., 2024001" />
+                                    @error('roll_number')
+                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
                                 <div>
                                     <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-2">
@@ -149,28 +193,33 @@
                                     @enderror
                                 </div>
 
-                                <div>
-                                    <label for="course_ids" class="block text-sm font-medium text-gray-700 mb-2">
-                                        {{ __('Assign Courses') }}
-                                    </label>
-                                    <select 
-                                        id="course_ids" 
-                                        name="course_ids[]" 
-                                        multiple 
-                                        size="5"
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('course_ids') border-red-500 @enderror"
-                                    >
-                                        @foreach($courses as $course)
-                                            <option value="{{ $course->course_id }}" {{ in_array($course->course_id, old('course_ids', [])) ? 'selected' : '' }}>
-                                                {{ $course->course_code ? '[' . $course->course_code . '] ' : '' }}{{ $course->course_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <p class="mt-1 text-sm text-gray-500">Hold Ctrl (Cmd on Mac) to select multiple courses</p>
-                                    @error('course_ids')
-                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                                @php
+                                    $collegeCourses = $courses->where('course_type', 'college');
+                                @endphp
+                                @if($collegeCourses->count() > 0)
+                                    <div>
+                                        <label for="course_ids" class="block text-sm font-medium text-gray-700 mb-2">
+                                            {{ __('Assign Courses') }}
+                                        </label>
+                                        <select 
+                                            id="course_ids" 
+                                            name="course_ids[]" 
+                                            multiple 
+                                            size="5"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('course_ids') border-red-500 @enderror"
+                                        >
+                                            @foreach($collegeCourses as $course)
+                                                <option value="{{ $course->course_id }}" data-course-type="{{ $course->course_type }}" {{ in_array($course->course_id, old('course_ids', [])) ? 'selected' : '' }}>
+                                                    {{ $course->course_code ? '[' . $course->course_code . '] ' : '' }}{{ $course->course_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <p class="mt-1 text-sm text-gray-500">Hold Ctrl (Cmd on Mac) to select multiple courses</p>
+                                        @error('course_ids')
+                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                @endif
 
 
                                 <div class="flex items-center mt-6">
@@ -195,59 +244,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const collegeSelect = document.getElementById('college_id');
-            const courseSelect = document.getElementById('course_ids');
+            const startYearInput = document.getElementById('start_year');
             const enrollmentInput = document.getElementById('enrollment_no');
-            const collegeCodeDisplay = document.getElementById('college_code_display');
-            const nextUserId = {{ $nextUserId }};
-
-            function updateCollegeCode() {
-                const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
-                const collegeCode = selectedOption.getAttribute('data-college-code') || '';
-                
-                if (collegeCode) {
-                    collegeCodeDisplay.value = collegeCode;
-                } else {
-                    collegeCodeDisplay.value = '';
-                    collegeCodeDisplay.placeholder = 'No college code available';
-                }
-                
-                updateEnrollmentNo();
-            }
 
             function updateEnrollmentNo() {
                 const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
                 const collegeCode = selectedOption.getAttribute('data-college-code') || '';
+                const startYear = startYearInput.value || new Date().getFullYear();
                 
-                // Get selected courses
-                const selectedCourses = Array.from(courseSelect.selectedOptions);
-                
-                if (collegeCode && selectedCourses.length > 0) {
-                    // Extract all course codes from selected courses
-                    const courseCodes = [];
-                    selectedCourses.forEach(course => {
-                        const courseText = course.textContent.trim();
-                        const courseCodeMatch = courseText.match(/\[([^\]]+)\]/);
-                        if (courseCodeMatch) {
-                            courseCodes.push(courseCodeMatch[1]);
-                        }
-                    });
-                    
-                    if (courseCodes.length > 0) {
-                        // Combine: COLLEGECODE_COURSE1_COURSE2_COURSE3_USERID
-                        enrollmentInput.value = `${collegeCode}_${courseCodes.join('_')}_${nextUserId}`;
-                    } else {
-                        enrollmentInput.value = 'Auto-generated';
-                    }
+                if (collegeCode && startYear) {
+                    // Preview format: COLLEGECODE-STARTYEAR-XXXX
+                    enrollmentInput.value = `${collegeCode}-${startYear}-XXXX (Preview)`;
                 } else {
                     enrollmentInput.value = 'Auto-generated';
                 }
             }
 
-            collegeSelect.addEventListener('change', updateCollegeCode);
-            courseSelect.addEventListener('change', updateEnrollmentNo);
+            collegeSelect.addEventListener('change', updateEnrollmentNo);
+            startYearInput.addEventListener('input', updateEnrollmentNo);
             
             // Initialize on load
-            updateCollegeCode();
+            updateEnrollmentNo();
         });
     </script>
 </x-app-layout>

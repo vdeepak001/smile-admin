@@ -37,6 +37,10 @@
                         <p class="text-lg font-semibold text-gray-900">{{ $collegeInfo->college_name }}</p>
                     </div>
                     <div>
+                        <p class="text-sm font-medium text-gray-600">College Code</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $collegeInfo->college_number }}</p>
+                    </div>
+                    <div>
                         <p class="text-sm font-medium text-gray-600">Email Address</p>
                         <p class="text-lg font-semibold text-gray-900">{{ $collegeInfo->user->email ?? 'N/A' }}</p>
                     </div>

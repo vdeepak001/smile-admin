@@ -21,6 +21,7 @@ class StoreCollegeInfoRequest extends FormRequest
     {
         return [
             'college_name' => 'required|string|max:255|unique:college_info,college_name',
+            'college_number' => 'required|string|max:3|regex:/^[0-9]+$/|unique:college_info,college_number',
             'email' => 'required|email|max:255|unique:users,email',
             // 'password' => 'required|string|min:8|confirmed', // Auto-generated
             'contact_person' => 'required|string|max:255',
@@ -41,6 +42,10 @@ class StoreCollegeInfoRequest extends FormRequest
         return [
             'college_name.required' => 'College name is required.',
             'college_name.unique' => 'This college name already exists.',
+            'college_number.required' => 'College number is required.',
+            'college_number.max' => 'College number must not exceed 3 characters.',
+            'college_number.regex' => 'College number must contain only numeric digits.',
+            'college_number.unique' => 'This college number is already in use.',
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
             'email.unique' => 'This email address is already registered.',
@@ -68,6 +73,7 @@ class StoreCollegeInfoRequest extends FormRequest
     {
         return [
             'college_name' => 'college name',
+            'college_number' => 'college number',
             'email' => 'email address',
             // 'password' => 'password',
             'contact_person' => 'contact person',

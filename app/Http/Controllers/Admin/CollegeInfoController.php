@@ -27,7 +27,7 @@ class CollegeInfoController extends Controller
      */
     public function create()
     {
-        $courses = Course::active()->get();
+        $courses = Course::active()->where('course_type', 'college')->get();
         return view('admin.college-info.create', compact('courses'));
     }
 
@@ -109,7 +109,7 @@ class CollegeInfoController extends Controller
      */
     public function edit(CollegeInfo $collegeInfo)
     {
-        $courses = Course::active()->get();
+        $courses = Course::active()->where('course_type', 'college')->get();
         return view('admin.college-info.edit', compact('collegeInfo', 'courses'));
     }
 

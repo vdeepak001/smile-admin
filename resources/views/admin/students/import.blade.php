@@ -43,14 +43,14 @@
                             <li>Upload a CSV file containing student data</li>
                             <li>First row must be the header with column names</li>
                             <li>Required columns: <code class="bg-blue-100 px-1">first_name</code>, <code class="bg-blue-100 px-1">last_name</code>, <code class="bg-blue-100 px-1">email</code>, <code class="bg-blue-100 px-1">college_id</code></li>
-                            <li>Optional columns: <code class="bg-blue-100 px-1">phone_number</code>, <code class="bg-blue-100 px-1">degree_id</code>, <code class="bg-blue-100 px-1">specialization</code>, <code class="bg-blue-100 px-1">year_of_study</code>, <code class="bg-blue-100 px-1">date_of_birth</code> (YYYY-MM-DD), <code class="bg-blue-100 px-1">active_status</code> (1 or 0)</li>
+                            <li>Optional columns: <code class="bg-blue-100 px-1">phone_number</code>, <code class="bg-blue-100 px-1">degree_id</code>, <code class="bg-blue-100 px-1">specialization</code>, <code class="bg-blue-100 px-1">year_of_study</code>, <code class="bg-blue-100 px-1">start_year</code>, <code class="bg-blue-100 px-1">end_year</code>, <code class="bg-blue-100 px-1">date_of_birth</code> (YYYY-MM-DD), <code class="bg-blue-100 px-1">active_status</code> (1 or 0)</li>
                             <li>Passwords will be auto-generated and sent via email</li>
                         </ul>
                     </div>
 
                     <!-- CSV Template Download -->
                     <div class="mb-6">
-                        <a href="data:text/csv;charset=utf-8,first_name,last_name,email,phone_number,college_id,degree_id,specialization,year_of_study,date_of_birth,active_status%0AJohn,Doe,john.doe@example.com,1234567890,1,1,Computer Science,2,2000-01-15,1" 
+                        <a href="data:text/csv;charset=utf-8,first_name,last_name,email,phone_number,college_id,degree_id,specialization,year_of_study,start_year,end_year,date_of_birth,active_status%0AJohn,Doe,john.doe@example.com,1234567890,1,1,Computer Science,2,2020,2024,2000-01-15,1" 
                            download="student_import_template.csv"
                            class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -115,6 +115,16 @@
                                         <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none"
                                             stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14">
+                                            </path>
+                                        </svg>
+                                        <span class="text-sm text-gray-600">College #{{ $college->college_number ?? 'N/A' }}</span>
+                                    </div>
+
+                                    <div class="flex items-start">
+                                        <svg class="w-5 h-5 text-gray-400 mr-2 mt-0.5" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
                                             </path>
                                         </svg>
@@ -224,6 +234,10 @@
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">College Name</p>
                                 <p class="font-medium text-gray-900">{{ $selectedCollege->college_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">College Number</p>
+                                <p class="font-medium text-gray-900">{{ $selectedCollege->college_number ?? 'N/A' }}</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">Status</p>

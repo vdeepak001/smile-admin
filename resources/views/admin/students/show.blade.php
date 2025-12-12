@@ -59,6 +59,11 @@
                                 </div>
 
                                 <div class="flex justify-between border-b border-gray-200 pb-2">
+                                    <dt class="text-gray-500">Roll Number</dt>
+                                    <dd class="font-medium">{{ $student->roll_number ?? 'N/A' }}</dd>
+                                </div>
+
+                                <div class="flex justify-between border-b border-gray-200 pb-2">
                                     <dt class="text-gray-500">Degree</dt>
                                     <dd class="font-medium">{{ $student->degree->name ?? 'N/A' }}</dd>
                                 </div>
@@ -78,22 +83,36 @@
                                     <dd class="font-medium">{{ $student->date_of_birth ? $student->date_of_birth->format('M d, Y') : 'N/A' }}</dd>
                                 </div>
 
+                                <div class="flex justify-between border-b border-gray-200 pb-2">
+                                    <dt class="text-gray-500">Academic Period</dt>
+                                    <dd class="font-medium">
+                                        @if($student->start_year || $student->end_year)
+                                            {{ $student->start_year ?? 'N/A' }} - {{ $student->end_year ?? 'N/A' }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </dd>
+                                </div>
+
                             </dl>
                         </div>
                     </div>
 
                     <div class="mt-8 border-t border-gray-200 pt-6">
                         <h3 class="text-lg font-medium text-indigo-600 mb-4">Assigned Courses</h3>
-                        @if($student->courses && $student->courses->count() > 0)
+                        @php
+                            $collegeCourses = $student->courses ? $student->courses->where('course_type', 'college') : collect([]);
+                        @endphp
+                        @if($collegeCourses->count() > 0)
                             <div class="flex flex-wrap gap-2">
-                                @foreach($student->courses as $course)
+                                @foreach($collegeCourses as $course)
                                     <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                                         {{ $course->course_name }}
                                     </span>
                                 @endforeach
                             </div>
                         @else
-                            <p class="text-gray-500 italic">No courses assigned yet.</p>
+                            <p class="text-gray-500 italic">No college courses assigned yet.</p>
                         @endif
                     </div>
 

@@ -27,7 +27,12 @@ class StudentController extends Controller
     public function create()
     {
         $colleges = CollegeInfo::where('active_status', true)->get();
-        $courses = Course::where('active_status', true)->get();
+        
+        // Filter courses to show only college-type courses
+        $courses = Course::where('active_status', true)
+            ->where('course_type', 'college')
+            ->get();
+        
         $degrees = Degree::where('active_status', true)->get();
         // Get next user ID safely (ignoring scopes to handle soft deletes accurately for ID generation prediction)
         $nextUserId = DB::table('users')->max('id') + 1;
@@ -55,34 +60,30 @@ class StudentController extends Controller
 
 
 
-            // Generate enrollment number using college code and all course codes
+            // Generate enrollment number using college code, start year, and sequential number
             $college = CollegeInfo::find($validated['college_id']);
             $collegeCode = $college->college_code ?? 'COL';
+            $startYear = $validated['start_year'] ?? date('Y');
             
-            // Combine all course codes
-            $courseCodes = [];
-            if (!empty($validated['course_ids'])) {
-                foreach ($validated['course_ids'] as $courseId) {
-                    $course = Course::find($courseId);
-                    if ($course && $course->course_code) {
-                        $courseCodes[] = $course->course_code;
-                    }
-                }
-            }
+            // Get the count of students with the same start_year to generate sequential number
+            $studentCount = Student::where('start_year', $startYear)
+                ->whereHas('user', function($query) use ($validated) {
+                    $query->where('college_id', $validated['college_id']);
+                })
+                ->count();
             
-            // Generate enrollment number: COLLEGECODE_COURSE1_COURSE2_..._USERID
-            if (!empty($courseCodes)) {
-                $enrollmentNo = $collegeCode . '_' . implode('_', $courseCodes) . '_' . $user->id;
-            } else {
-                // Fallback if no courses with codes
-                $enrollmentNo = $collegeCode . '_' . $user->id;
-            }
+            // Sequential number is count + 1, padded to 4 digits
+            $sequentialNumber = str_pad($studentCount + 1, 4, '0', STR_PAD_LEFT);
+            
+            // Generate enrollment number: COLLEGECODE-STARTYEAR-SEQUENTIAL
+            $enrollmentNo = $collegeCode . '-' . $startYear . '-' . $sequentialNumber;
             
             \Illuminate\Support\Facades\Log::info('Creating Student', [
                 'college_id' => $validated['college_id'],
                 'college_code' => $collegeCode,
-                'course_codes' => $courseCodes,
-                'user_id' => $user->id,
+                'start_year' => $startYear,
+                'student_count' => $studentCount,
+                'sequential_number' => $sequentialNumber,
                 'generated_enrollment_no' => $enrollmentNo
             ]);
 
@@ -92,7 +93,10 @@ class StudentController extends Controller
                 'degree_id' => $validated['degree_id'] ?? null,
                 'specialization' => $validated['specialization'] ?? null,
                 'year_of_study' => $validated['year_of_study'] ?? null,
+                'start_year' => $validated['start_year'] ?? null,
+                'end_year' => $validated['end_year'] ?? null,
                 'enrollment_no' => $enrollmentNo,
+                'roll_number' => $validated['roll_number'] ?? null,
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
                 'active_status' => $validated['active_status'] ?? true,
                 'created_by' => auth()->id(),
@@ -133,7 +137,12 @@ class StudentController extends Controller
     {
         $student->load(['user', 'courses']);
         $colleges = CollegeInfo::where('active_status', true)->get();
-        $courses = Course::where('active_status', true)->get();
+        
+        // Filter courses to show only college-type courses
+        $courses = Course::where('active_status', true)
+            ->where('course_type', 'college')
+            ->get();
+        
         $degrees = Degree::where('active_status', true)->get();
         return view('admin.students.edit', compact('student', 'colleges', 'courses', 'degrees'));
     }
@@ -143,6 +152,10 @@ class StudentController extends Controller
         $validated = $request->validated();
 
         DB::transaction(function () use ($validated, $student) {
+            // Capture original values BEFORE updating
+            $originalCollegeId = $student->user->college_id;
+            $originalStartYear = $student->start_year;
+            
             // Update User
             $userData = [
                 'first_name' => $validated['first_name'],
@@ -156,27 +169,29 @@ class StudentController extends Controller
 
             $student->user->update($userData);
 
-            // Regenerate enrollment number if college or courses changed
+            // Regenerate enrollment number if college or start year changed
             $college = CollegeInfo::find($validated['college_id']);
             $collegeCode = $college->college_code ?? 'COL';
+            $startYear = $validated['start_year'] ?? $originalStartYear ?? date('Y');
             
-            // Combine all course codes
-            $courseCodes = [];
-            if (!empty($validated['course_ids'])) {
-                foreach ($validated['course_ids'] as $courseId) {
-                    $course = Course::find($courseId);
-                    if ($course && $course->course_code) {
-                        $courseCodes[] = $course->course_code;
-                    }
-                }
-            }
-            
-            // Generate new enrollment number: COLLEGECODE_COURSE1_COURSE2_..._USERID
-            if (!empty($courseCodes)) {
-                $enrollmentNo = $collegeCode . '_' . implode('_', $courseCodes) . '_' . $student->user_id;
+            // Check if start_year or college changed - if so, recalculate sequential number
+            if ($originalStartYear != $startYear || $originalCollegeId != $validated['college_id']) {
+                // Get the count of students with the same start_year to generate sequential number
+                $studentCount = Student::where('start_year', $startYear)
+                    ->where('student_id', '!=', $student->student_id) // Exclude current student
+                    ->whereHas('user', function($query) use ($validated) {
+                        $query->where('college_id', $validated['college_id']);
+                    })
+                    ->count();
+                
+                // Sequential number is count + 1, padded to 4 digits
+                $sequentialNumber = str_pad($studentCount + 1, 4, '0', STR_PAD_LEFT);
+                
+                // Generate new enrollment number: COLLEGECODE-STARTYEAR-SEQUENTIAL
+                $enrollmentNo = $collegeCode . '-' . $startYear . '-' . $sequentialNumber;
             } else {
-                // Fallback if no courses with codes
-                $enrollmentNo = $collegeCode . '_' . $student->user_id;
+                // Keep existing enrollment number if start_year and college haven't changed
+                $enrollmentNo = $student->enrollment_no;
             }
 
             // Update Student
@@ -184,8 +199,11 @@ class StudentController extends Controller
                 'degree_id' => $validated['degree_id'] ?? null,
                 'specialization' => $validated['specialization'] ?? null,
                 'year_of_study' => $validated['year_of_study'] ?? null,
+                'start_year' => $validated['start_year'] ?? null,
+                'end_year' => $validated['end_year'] ?? null,
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
                 'enrollment_no' => $enrollmentNo,
+                'roll_number' => $validated['roll_number'] ?? null,
                 'active_status' => $validated['active_status'] ?? true,
                 'updated_by' => auth()->id(),
             ]);
@@ -326,38 +344,33 @@ class StudentController extends Controller
                         ]);
 
 
-                        // Generate enrollment number using college code and course code
+                        // Generate enrollment number using college code, start year, and sequential number
                         $college = CollegeInfo::find($data['college_id']);
                         $collegeCode = $college->college_code ?? 'COL';
+                        $startYear = $data['start_year'] ?? date('Y');
                         
-                        // Get course code from CSV if provided, otherwise use default
-                        $courseCode = 'GEN';
-                        if (!empty($data['course_id'])) {
-                            $course = Course::find($data['course_id']);
-                            $courseCode = $course->course_code ?? 'CRS';
-                        }
-                        
-                        // Get next sequence number for this college+course combination
-                        $lastStudent = Student::whereHas('user', function($query) use ($data) {
+                        // Get the count of students with the same start_year to generate sequential number
+                        $studentCount = Student::where('start_year', $startYear)
+                            ->whereHas('user', function($query) use ($data) {
                                 $query->where('college_id', $data['college_id']);
                             })
-                            ->where('enrollment_no', 'LIKE', $collegeCode . '_' . $courseCode . '_%')
-                            ->orderBy('enrollment_no', 'desc')
-                            ->first();
+                            ->count();
                         
-                        $nextSequence = 1;
-                        if ($lastStudent && preg_match('/_(\d+)$/', $lastStudent->enrollment_no, $matches)) {
-                            $nextSequence = intval($matches[1]) + 1;
-                        }
+                        // Sequential number is count + 1, padded to 4 digits
+                        $sequentialNumber = str_pad($studentCount + 1, 4, '0', STR_PAD_LEFT);
                         
-                        $enrollmentNo = $collegeCode . '_' . $courseCode . '_' . str_pad($nextSequence, 3, '0', STR_PAD_LEFT);
+                        // Generate enrollment number: COLLEGECODE-STARTYEAR-SEQUENTIAL
+                        $enrollmentNo = $collegeCode . '-' . $startYear . '-' . $sequentialNumber;
 
                         $student = Student::create([
                             'user_id' => $user->id,
                             'degree_id' => !empty($data['degree_id']) ? $data['degree_id'] : null,
                             'specialization' => $data['specialization'] ?? null,
                             'year_of_study' => !empty($data['year_of_study']) ? $data['year_of_study'] : null,
+                            'start_year' => !empty($data['start_year']) ? $data['start_year'] : null,
+                            'end_year' => !empty($data['end_year']) ? $data['end_year'] : null,
                             'enrollment_no' => $enrollmentNo,
+                            'roll_number' => $data['roll_number'] ?? null,
                             'date_of_birth' => !empty($data['date_of_birth']) ? $data['date_of_birth'] : null,
                             'active_status' => isset($data['active_status']) ? (bool)$data['active_status'] : true,
                             'created_by' => auth()->id(),

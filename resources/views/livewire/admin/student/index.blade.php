@@ -6,9 +6,9 @@
 
             <!-- Filters & Actions -->
             <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 gap-4">
+                <div class="flex items-center gap-4 overflow-x-auto">
                     <!-- Search -->
-                    <div class="flex-1 min-w-[200px]">
+                    <div class="w-[250px] flex-shrink-0">
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +22,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-4">
+                    <div class="flex items-center gap-4 flex-shrink-0">
                         <!-- College Filter -->
                         <select wire:model.live="selectedCollege"
                             class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg">
@@ -64,25 +64,28 @@
                             </button>
                         </div>
 
-                        <!-- Bulk Import Button -->
-                        <a href="{{ route('students.import.form') }}"
-                            class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex-shrink-0 whitespace-nowrap">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-                                </path>
-                            </svg>
-                            Bulk Import
-                        </a>
+                        <!-- Action Buttons Group -->
+                        <div class="flex items-center gap-3 flex-shrink-0">
+                            <!-- Add New Button -->
+                            <a href="{{ route('students.create') }}"
+                                class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                                    </path>
+                                </svg>
+                                Add Student
+                            </a>
 
-                        <!-- Add New Button -->
-                        <a href="{{ route('students.create') }}"
-                            class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex-shrink-0 whitespace-nowrap">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-                                </path>
-                            </svg>
-                            Add Student
-                        </a>
+                            <!-- Bulk Import Button -->
+                            <a href="{{ route('students.import.form') }}"
+                                class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                    </path>
+                                </svg>
+                                Bulk Import
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

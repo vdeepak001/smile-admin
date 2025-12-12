@@ -17,7 +17,10 @@ class Student extends Model
         'degree_id',
         'specialization',
         'year_of_study',
+        'start_year',
+        'end_year',
         'enrollment_no',
+        'roll_number',
         'guardian_name',
         'date_of_birth',
         'active_status',
@@ -29,6 +32,8 @@ class Student extends Model
         'active_status' => 'boolean',
         'date_of_birth' => 'date',
         'year_of_study' => 'integer',
+        'start_year' => 'integer',
+        'end_year' => 'integer',
     ];
 
     public function user()

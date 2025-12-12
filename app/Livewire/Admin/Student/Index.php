@@ -40,9 +40,12 @@ class Index extends Component
     {
         $student = Student::with(['user'])->findOrFail($studentId);
         
-        // Get assigned courses from assigned_courses table
+        // Get assigned courses from assigned_courses table, filtering for college-type courses only
         $this->assignedCourses = \App\Models\AssignedCourse::where('student_id', $student->user_id)
             ->with(['course', 'assignedBy'])
+            ->whereHas('course', function($query) {
+                $query->where('course_type', 'college');
+            })
             ->get();
         
         $this->selectedStudent = $student;

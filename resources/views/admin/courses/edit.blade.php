@@ -6,12 +6,13 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-6">
                 <form action="{{ route('courses.update', $course) }}" method="POST" class="space-y-6"
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
 
                     <!-- Course Name -->
                     <div>
@@ -35,11 +36,13 @@
                         <input type="text" id="course_code" name="course_code"
                             value="{{ old('course_code', $course->course_code) }}"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('course_code') border-red-500 @enderror"
-                            placeholder="Enter course code (e.g., CS101, MATH201)" required>
+                            placeholder="Enter course code" required>
                         @error('course_code')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
+                  
 
                     <!-- Description -->
                     <div>
@@ -106,7 +109,33 @@
                         @enderror
                     </div>
 
-
+                    <!-- Course Type -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Course Type <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center space-x-6">
+                            <div class="flex items-center">
+                                <input type="radio" id="course_type_open" name="course_type" value="open"
+                                    @checked(old('course_type', $course->course_type) == 'open')
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 cursor-pointer">
+                                <label for="course_type_open" class="ml-2 block text-sm text-gray-700 cursor-pointer">
+                                    Open
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="course_type_college" name="course_type" value="college"
+                                    @checked(old('course_type', $course->course_type) == 'college')
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 cursor-pointer">
+                                <label for="course_type_college" class="ml-2 block text-sm text-gray-700 cursor-pointer">
+                                    College
+                                </label>
+                            </div>
+                        </div>
+                        @error('course_type')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <!-- Active Status -->
                     <div class="flex items-center">
@@ -117,6 +146,7 @@
                         <label for="active_status" class="ml-3 block text-sm font-medium text-gray-700 cursor-pointer">
                             Active Status
                         </label>
+                    </div>
                     </div>
 
                     <!-- Buttons -->

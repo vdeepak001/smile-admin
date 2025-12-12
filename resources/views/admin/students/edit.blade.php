@@ -13,58 +13,82 @@
                         @csrf
                         @method('PUT')
 
-                        <!-- College Selection -->
-                        <div>
-                            <x-input-label for="college_id" :value="__('Select College')" />
-                            <select id="college_id" name="college_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="" data-college-code="">Select College</option>
-                                @foreach($colleges as $college)
-                                    <option value="{{ $college->college_id }}" data-college-code="{{ $college->college_code ?? '' }}" {{ old('college_id', $student->user->college_id ?? '') == $college->college_id ? 'selected' : '' }}>
-                                        {{ $college->college_name }} @if($college->college_code) [{{ $college->college_code }}] @endif
-                                    </option>
-                                @endforeach
-                            </select>
-                            <x-input-error :messages="$errors->get('college_id')" class="mt-2" />
+                        <!-- College, Degree, and Specialization in one row -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- College Selection -->
+                            <div>
+                                <x-input-label for="college_id" :value="__('Select College')" />
+                                <select id="college_id" name="college_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="" data-college-code="">Select College</option>
+                                    @foreach($colleges as $college)
+                                        <option value="{{ $college->college_id }}" data-college-code="{{ $college->college_code ?? '' }}" {{ old('college_id', $student->user->college_id ?? '') == $college->college_id ? 'selected' : '' }}>
+                                            {{ $college->college_name }} @if($college->college_code) [{{ $college->college_code }}] @endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-input-error :messages="$errors->get('college_id')" class="mt-2" />
+                            </div>
+
+                            <!-- Degree Selection -->
+                            <div>
+                                <x-input-label for="degree_id" :value="__('Select Degree')" />
+                                <select id="degree_id" name="degree_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="">Select Degree (Optional)</option>
+                                    @foreach($degrees as $degree)
+                                        <option value="{{ $degree->id }}" {{ old('degree_id', $student->degree_id ?? '') == $degree->id ? 'selected' : '' }}>
+                                            {{ $degree->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-input-error :messages="$errors->get('degree_id')" class="mt-2" />
+                            </div>
+
+                            <!-- Specialization -->
+                            <div>
+                                <x-input-label for="specialization" :value="__('Specialization')" />
+                                <x-text-input id="specialization" name="specialization" type="text" class="mt-1 block w-full" 
+                                              :value="old('specialization', $student->specialization)" 
+                                              placeholder="e.g., Computer Science, Information Technology" />
+                                <x-input-error :messages="$errors->get('specialization')" class="mt-2" />
+                            </div>
                         </div>
 
-                        <!-- College Code (Display Only) -->
-                        <div>
-                            <x-input-label for="college_code_display" :value="__('College Code')" />
-                            <input type="text" id="college_code_display" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm bg-gray-100 cursor-not-allowed" value="" disabled readonly placeholder="Select college to see code" />
-                        </div>
+                        <!-- Year of Study, Start Year, and End Year in one row -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Year of Study -->
+                            <div>
+                                <x-input-label for="year_of_study" :value="__('Year of Study')" />
+                                <input type="number" id="year_of_study" name="year_of_study" 
+                                       value="{{ old('year_of_study', $student->year_of_study) }}" 
+                                       min="1" max="10"
+                                       class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                                       placeholder="e.g., 1, 2, 3">
+                                <x-input-error :messages="$errors->get('year_of_study')" class="mt-2" />
+                            </div>
 
-                        <!-- Degree Selection -->
-                        <div>
-                            <x-input-label for="degree_id" :value="__('Select Degree')" />
-                            <select id="degree_id" name="degree_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                <option value="">Select Degree (Optional)</option>
-                                @foreach($degrees as $degree)
-                                    <option value="{{ $degree->id }}" {{ old('degree_id', $student->degree_id ?? '') == $degree->id ? 'selected' : '' }}>
-                                        {{ $degree->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <x-input-error :messages="$errors->get('degree_id')" class="mt-2" />
-                        </div>
+                            <!-- Start Year -->
+                            <div>
+                                <x-input-label for="start_year" :value="__('Start Year')" />
+                                <input type="number" id="start_year" name="start_year" 
+                                       value="{{ old('start_year', $student->start_year) }}" 
+                                       min="1900" max="{{ date('Y') + 10 }}" step="1"
+                                       onwheel="this.blur()" 
+                                       class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                                       placeholder="e.g., 2020">
+                                <x-input-error :messages="$errors->get('start_year')" class="mt-2" />
+                            </div>
 
-                        <!-- Specialization -->
-                        <div>
-                            <x-input-label for="specialization" :value="__('Specialization')" />
-                            <x-text-input id="specialization" name="specialization" type="text" class="mt-1 block w-full" 
-                                          :value="old('specialization', $student->specialization)" 
-                                          placeholder="e.g., Computer Science, Information Technology" />
-                            <x-input-error :messages="$errors->get('specialization')" class="mt-2" />
-                        </div>
-
-                        <!-- Year of Study -->
-                        <div>
-                            <x-input-label for="year_of_study" :value="__('Year of Study')" />
-                            <input type="number" id="year_of_study" name="year_of_study" 
-                                   value="{{ old('year_of_study', $student->year_of_study) }}" 
-                                   min="1" max="10"
-                                   class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
-                                   placeholder="e.g., 1, 2, 3">
-                            <x-input-error :messages="$errors->get('year_of_study')" class="mt-2" />
+                            <!-- End Year -->
+                            <div>
+                                <x-input-label for="end_year" :value="__('End Year')" />
+                                <input type="number" id="end_year" name="end_year" 
+                                       value="{{ old('end_year', $student->end_year) }}" 
+                                       min="1900" max="{{ date('Y') + 10 }}" step="1"
+                                       onwheel="this.blur()" 
+                                       class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" 
+                                       placeholder="e.g., 2024">
+                                <x-input-error :messages="$errors->get('end_year')" class="mt-2" />
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -112,7 +136,11 @@
                                         <x-input-error :messages="$errors->get('enrollment_no')" class="mt-2" />
                                     </div>
 
-
+                                    <div>
+                                        <x-input-label for="roll_number" :value="__('Roll Number')" />
+                                        <x-text-input id="roll_number" name="roll_number" type="text" class="mt-1 block w-full" :value="old('roll_number', $student->roll_number)" placeholder="e.g., 2024001" />
+                                        <x-input-error :messages="$errors->get('roll_number')" class="mt-2" />
+                                    </div>
 
                                     <div>
                                         <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
@@ -120,30 +148,35 @@
                                         <x-input-error :messages="$errors->get('date_of_birth')" class="mt-2" />
                                     </div>
 
-                                    <div>
-                                        <label for="course_ids" class="block text-sm font-medium text-gray-700 mb-2">
-                                            {{ __('Assign Courses') }}
-                                        </label>
-                                        <select 
-                                            id="course_ids" 
-                                            name="course_ids[]" 
-                                            multiple 
-                                            size="5"
-                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('course_ids') border-red-500 @enderror"
-                                        >
-                                            @foreach($courses as $course)
-                                                <option value="{{ $course->course_id }}" 
-                                                    {{ in_array($course->course_id, old('course_ids', $student->courses->pluck('course_id')->toArray())) ? 'selected' : '' }}
-                                                >
-                                                    {{ $course->course_code ? '[' . $course->course_code . '] ' : '' }}{{ $course->course_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <p class="mt-1 text-sm text-gray-500">Hold Ctrl (Cmd on Mac) to select multiple courses</p>
-                                        @error('course_ids')
-                                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                        @enderror
-                                    </div>
+                                    @php
+                                        $collegeCourses = $courses->where('course_type', 'college');
+                                    @endphp
+                                    @if($collegeCourses->count() > 0)
+                                        <div>
+                                            <label for="course_ids" class="block text-sm font-medium text-gray-700 mb-2">
+                                                {{ __('Assign Courses') }}
+                                            </label>
+                                            <select 
+                                                id="course_ids" 
+                                                name="course_ids[]" 
+                                                multiple 
+                                                size="5"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('course_ids') border-red-500 @enderror"
+                                            >
+                                                @foreach($collegeCourses as $course)
+                                                    <option value="{{ $course->course_id }}" data-course-type="{{ $course->course_type }}"
+                                                        {{ in_array($course->course_id, old('course_ids', $student->courses->pluck('course_id')->toArray())) ? 'selected' : '' }}
+                                                    >
+                                                        {{ $course->course_code ? '[' . $course->course_code . '] ' : '' }}{{ $course->course_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <p class="mt-1 text-sm text-gray-500">Hold Ctrl (Cmd on Mac) to select multiple courses</p>
+                                            @error('course_ids')
+                                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    @endif
 
 
                                     <div class="flex items-center space-x-2 mt-6">
@@ -169,62 +202,38 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const collegeSelect = document.getElementById('college_id');
-            const courseSelect = document.getElementById('course_ids');
-            const collegeCodeDisplay = document.getElementById('college_code_display');
+            const startYearInput = document.getElementById('start_year');
             const enrollmentInput = document.getElementById('enrollment_no');
-
-            function updateCollegeCode() {
-                const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
-                const collegeCode = selectedOption.getAttribute('data-college-code') || '';
-                
-                if (collegeCode) {
-                    collegeCodeDisplay.value = collegeCode;
-                } else {
-                    collegeCodeDisplay.value = '';
-                    collegeCodeDisplay.placeholder = 'No college code available';
-                }
-                
-                updateEnrollmentNo();
-            }
+            const originalEnrollment = enrollmentInput.value;
+            const originalCollege = collegeSelect.value;
+            const originalStartYear = startYearInput.value;
 
             function updateEnrollmentNo() {
                 const selectedOption = collegeSelect.options[collegeSelect.selectedIndex];
                 const collegeCode = selectedOption.getAttribute('data-college-code') || '';
+                const startYear = startYearInput.value || new Date().getFullYear();
+                const currentCollege = collegeSelect.value;
+                const currentStartYear = startYearInput.value;
                 
-                // Get selected courses
-                const selectedCourses = Array.from(courseSelect.selectedOptions);
-                
-                // Extract student ID from current enrollment number or use existing value
-                const currentEnrollment = enrollmentInput.value;
-                const studentId = currentEnrollment.split('_').pop(); // Get last part as ID
-                
-                if (collegeCode && selectedCourses.length > 0) {
-                    // Extract all course codes from selected courses
-                    const courseCodes = [];
-                    selectedCourses.forEach(course => {
-                        const courseText = course.textContent.trim();
-                        const courseCodeMatch = courseText.match(/\[([^\]]+)\]/);
-                        if (courseCodeMatch) {
-                            courseCodes.push(courseCodeMatch[1]);
-                        }
-                    });
-                    
-                    if (courseCodes.length > 0) {
-                        // Combine: COLLEGECODE_COURSE1_COURSE2_COURSE3_USERID
-                        enrollmentInput.value = `${collegeCode}_${courseCodes.join('_')}_${studentId}`;
+                // Only update preview if college or start year changed from original
+                if (currentCollege !== originalCollege || currentStartYear !== originalStartYear) {
+                    if (collegeCode && startYear) {
+                        // Preview format: COLLEGECODE-STARTYEAR-XXXX
+                        enrollmentInput.value = `${collegeCode}-${startYear}-XXXX (Will be recalculated)`;
                     } else {
-                        enrollmentInput.value = currentEnrollment; // Keep original if no course codes found
+                        enrollmentInput.value = originalEnrollment;
                     }
                 } else {
-                    enrollmentInput.value = currentEnrollment; // Keep original if no college or courses selected
+                    // Keep original enrollment if nothing changed
+                    enrollmentInput.value = originalEnrollment;
                 }
             }
 
-            collegeSelect.addEventListener('change', updateCollegeCode);
-            courseSelect.addEventListener('change', updateEnrollmentNo);
+            collegeSelect.addEventListener('change', updateEnrollmentNo);
+            startYearInput.addEventListener('input', updateEnrollmentNo);
             
             // Initialize on load
-            updateCollegeCode();
+            updateEnrollmentNo();
         });
     </script>
 </x-app-layout>

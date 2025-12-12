@@ -49,6 +49,20 @@
                         <p class="text-lg font-semibold text-gray-900">{{ $course->course_code ?? 'N/A' }}</p>
                     </div>
                     <div>
+                        <p class="text-sm font-medium text-gray-600">Course Type</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            @if ($course->course_type == 'college')
+                                <span class="inline-flex px-3 py-1 text-sm font-semibold text-purple-800 bg-purple-100 rounded-full">
+                                    College
+                                </span>
+                            @else
+                                <span class="inline-flex px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-full">
+                                    Open
+                                </span>
+                            @endif
+                        </p>
+                    </div>
+                    <div>
                         <p class="text-sm font-medium text-gray-600">Status</p>
                         <p class="mt-1">
                             @if ($course->active_status)

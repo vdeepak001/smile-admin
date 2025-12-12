@@ -29,9 +29,11 @@ class UpdateStudentRequest extends FormRequest
             'degree_id' => ['nullable', 'exists:degrees,id'],
             'specialization' => ['nullable', 'string', 'max:255'],
             'year_of_study' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'start_year' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 10)],
+            'end_year' => ['nullable', 'integer', 'min:1900', 'max:' . (date('Y') + 10), 'gte:start_year'],
 
             // Student fields
-
+            'roll_number' => ['nullable', 'string', 'max:100'],
             'date_of_birth' => ['nullable', 'date'],
 
             'active_status' => ['boolean'],

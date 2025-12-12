@@ -22,6 +22,7 @@ class StoreCourseRequest extends FormRequest
         return [
             'course_name' => 'required|string|max:255|unique:courses,course_name',
             'course_code' => 'required|string|max:50|unique:courses,course_code',
+            'course_type' => 'required|in:open,college',
             'description' => 'nullable|string|max:5000',
             'course_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'test_questions' => 'required|integer|min:0|max:1000',
@@ -44,6 +45,8 @@ class StoreCourseRequest extends FormRequest
             'course_code.required' => 'Course code is required.',
             'course_code.unique' => 'This course code already exists.',
             'course_code.max' => 'Course code must not exceed 50 characters.',
+            'course_type.required' => 'Course type is required.',
+            'course_type.in' => 'Course type must be either open or college.',
             'description.max' => 'Description must not exceed 5000 characters.',
             'course_pic.image' => 'Course picture must be an image file.',
             'course_pic.mimes' => 'Course picture must be a jpeg, png, jpg, or gif file.',
@@ -68,6 +71,7 @@ class StoreCourseRequest extends FormRequest
         return [
             'course_name' => 'course name',
             'course_code' => 'course code',
+            'course_type' => 'course type',
             'description' => 'description',
             'course_pic' => 'course picture',
             'test_questions' => 'test questions',

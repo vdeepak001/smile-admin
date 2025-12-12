@@ -30,6 +30,20 @@
                                     @enderror
                                 </div>
 
+                                <!-- College Number -->
+                                <div>
+                                    <label for="college_number" class="block text-sm font-medium text-gray-700 mb-2">
+                                        College Code <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="college_number" name="college_number" value="{{ old('college_number') }}"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('college_number') border-red-500 @enderror"
+                                        placeholder="Enter college number (max 3 digits)" maxlength="3" pattern="[0-9]*" required>
+                                    <p class="mt-1 text-sm text-gray-500">Enter a unique 3-digit number (e.g., 001, 002)</p>
+                                    @error('college_number')
+                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                                 <!-- Email ID -->
                                 <div>
                                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
@@ -57,25 +71,18 @@
                                     @enderror
                                 </div>
 
-                                <!-- Courses -->
-                                <div>
-                                    <label for="course_ids" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Courses <span class="text-red-500">*</span>
+                                  <!-- Active Status -->
+                                <div class="flex items-center pt-2">
+                                    <input type="hidden" name="active_status" value="0">
+                                    <input type="checkbox" id="active_status" name="active_status" value="1"
+                                        @checked(old('active_status', true))
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer">
+                                    <label for="active_status" class="ml-3 block text-sm font-medium text-gray-700 cursor-pointer">
+                                        Active Status
                                     </label>
-                                    <select id="course_ids" name="course_ids[]" multiple
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('course_ids') border-red-500 @enderror"
-                                        required>
-                                        @foreach ($courses as $course)
-                                            <option value="{{ $course->course_id }}" @selected(in_array($course->course_id, old('course_ids', [])))>
-                                                {{ $course->course_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <p class="mt-1 text-sm text-gray-500">Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.</p>
-                                    @error('course_ids')
-                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                                    @enderror
                                 </div>
+
+                              
                             </div>
                         </div>
 
@@ -123,15 +130,24 @@
                                     @enderror
                                 </div>
 
-                                <!-- Active Status -->
-                                <div class="flex items-center pt-2">
-                                    <input type="hidden" name="active_status" value="0">
-                                    <input type="checkbox" id="active_status" name="active_status" value="1"
-                                        @checked(old('active_status', true))
-                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer">
-                                    <label for="active_status" class="ml-3 block text-sm font-medium text-gray-700 cursor-pointer">
-                                        Active Status
+                                <!-- Courses -->
+                                <div>
+                                    <label for="course_ids" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Courses <span class="text-red-500">*</span>
                                     </label>
+                                    <select id="course_ids" name="course_ids[]" multiple
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('course_ids') border-red-500 @enderror"
+                                        required>
+                                        @foreach ($courses as $course)
+                                            <option value="{{ $course->course_id }}" @selected(in_array($course->course_id, old('course_ids', [])))>
+                                                {{ $course->course_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="mt-1 text-sm text-gray-500">Hold Ctrl (Windows) or Cmd (Mac) to select multiple options.</p>
+                                    @error('course_ids')
+                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
