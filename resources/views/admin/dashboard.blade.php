@@ -1,4 +1,8 @@
 <x-app-layout>
+    <x-slot name="title">
+        Admin Dashboard
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-white dark:text-gray-200 leading-tight">
             {{ __('Admin Dashboard') }}
@@ -23,6 +27,9 @@
 
                 <x-dashboard-card title="Total Students" value="{{ $totalStudents ?? 0 }}" icon="academic-cap"
                     color="indigo" :trend="10" />
+
+                <x-dashboard-card title="Total Questions" value="{{ $totalQuestions ?? 0 }}" icon="question-mark-circle"
+                    color="red" :trend="15" />
             </div>
 
             <!-- Welcome Section -->

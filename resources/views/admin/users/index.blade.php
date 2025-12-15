@@ -1,4 +1,8 @@
 <x-app-layout>
+    <x-slot name="title">
+        Users Management
+    </x-slot>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-white leading-tight">
             {{ __('Users Management') }}

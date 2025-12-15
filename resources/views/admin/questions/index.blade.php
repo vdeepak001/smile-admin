@@ -1,13 +1,9 @@
 <x-app-layout>
-    <x-slot name="title">
-        College Information
-    </x-slot>
-
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-white leading-tight">
-            {{ __('College Information') }}
+            {{ __('Questions Management') }}
         </h2>
     </x-slot>
 
-    <livewire:admin.college-info.index />
+    @livewire('admin.question.index')
 </x-app-layout>

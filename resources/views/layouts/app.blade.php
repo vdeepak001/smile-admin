@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'SMILE LMS') }}</title>
+    <title>{{ isset($title) ? (is_string($title) ? $title : strip_tags($title)) . ' - ' . config('app.name', 'SMILE LMS') : (isset($header) ? strip_tags($header) . ' - ' . config('app.name', 'SMILE LMS') : config('app.name', 'SMILE LMS')) }}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
