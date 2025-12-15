@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-6">
                 <form action="{{ route('course-topics.update', $courseTopic) }}" method="POST" class="space-y-6"
                     enctype="multipart/form-data">
@@ -49,55 +49,58 @@
                         </div>
                     </div>
 
-                    <!-- Description -->
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                            Description
-                        </label>
-                        <textarea id="description" name="description" rows="4"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                            placeholder="Enter topic description">{{ old('description', $courseTopic->description) }}</textarea>
-                        @error('description')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Topic Picture -->
+                        <!-- Description -->
                         <div>
-                            <label for="topic_pic" class="block text-sm font-medium text-gray-700 mb-2">
-                                Topic Picture
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description
                             </label>
-                            @if($courseTopic->topic_pic)
-                                <div class="mb-2">
-                                    <img src="{{ \Storage::url($courseTopic->topic_pic) }}" alt="Topic Picture" class="w-32 h-32 object-cover rounded">
-                                    <p class="text-xs text-gray-500 mt-1">Current image</p>
-                                </div>
-                            @endif
-                            <input type="file" id="topic_pic" name="topic_pic" accept="image/*"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('topic_pic') border-red-500 @enderror">
-                            @error('topic_pic')
+                            <textarea id="description" name="description" rows="4"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                                placeholder="Enter topic description">{{ old('description', $courseTopic->description) }}</textarea>
+                            @error('description')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        <!-- Attachment -->
+                        <!-- Attachments (Multiple) -->
                         <div>
-                            <label for="attachment" class="block text-sm font-medium text-gray-700 mb-2">
-                                Attachment
+                            <label for="attachments" class="block text-sm font-medium text-gray-700 mb-2">
+                                Attachments (Multiple Files)
                             </label>
-                            @if($courseTopic->attachment)
-                                <div class="mb-2">
-                                    <a href="{{ \Storage::url($courseTopic->attachment) }}" target="_blank" class="text-blue-600 hover:underline text-sm">
-                                        📎 Current attachment
-                                    </a>
-                                </div>
-                            @endif
-                            <input type="file" id="attachment" name="attachment"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('attachment') border-red-500 @enderror">
-                            @error('attachment')
+                            <input type="file" id="attachments" name="attachments[]" multiple
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('attachments') border-red-500 @enderror @error('attachments.*') border-red-500 @enderror">
+                            @error('attachments')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
+                            @error('attachments.*')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-1 text-sm text-gray-500">Accepted: PDF, DOC, DOCX, PPT, PPTX, TXT, ZIP (Max: 10MB per file)</p>
+                            
+                            @if($courseTopic->attachment)
+                                @php
+                                    $attachments = json_decode($courseTopic->attachment, true);
+                                @endphp
+                                @if(is_array($attachments) && count($attachments) > 0)
+                                    <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                                        <p class="text-sm font-medium text-gray-700 mb-2">Current Attachments:</p>
+                                        <div class="space-y-1">
+                                            @foreach($attachments as $file)
+                                                <a href="{{ \Storage::url($file['path']) }}" target="_blank" 
+                                                   class="flex items-center text-blue-600 hover:text-blue-800 text-sm">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    {{ $file['original_name'] ?? basename($file['path']) }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-2">Note: Uploading new files will replace all existing attachments</p>
+                                    </div>
+                                @endif
+                            @endif
                         </div>
                     </div>
 

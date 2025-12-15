@@ -23,8 +23,8 @@ class UpdateCourseTopicRequest extends FormRequest
             'course_id' => 'required|exists:courses,course_id',
             'topic_name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'topic_pic' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'attachment' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx,txt,zip|max:10240',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'file|mimes:pdf,doc,docx,ppt,pptx,txt,zip|max:10240',
             'active_status' => 'boolean',
         ];
     }
@@ -39,12 +39,10 @@ class UpdateCourseTopicRequest extends FormRequest
             'course_id.exists' => 'Selected course does not exist.',
             'topic_name.required' => 'Topic name is required.',
             'topic_name.max' => 'Topic name must not exceed 255 characters.',
-            'topic_pic.image' => 'Topic picture must be an image file.',
-            'topic_pic.mimes' => 'Topic picture must be a jpeg, png, jpg, or gif file.',
-            'topic_pic.max' => 'Topic picture must not exceed 2MB.',
-            'attachment.file' => 'Attachment must be a file.',
-            'attachment.mimes' => 'Attachment must be a pdf, doc, docx, ppt, pptx, txt, or zip file.',
-            'attachment.max' => 'Attachment must not exceed 10MB.',
+            'attachments.array' => 'Attachments must be an array of files.',
+            'attachments.*.file' => 'Each attachment must be a valid file.',
+            'attachments.*.mimes' => 'Attachments must be pdf, doc, docx, ppt, pptx, txt, or zip files.',
+            'attachments.*.max' => 'Each attachment must not exceed 10MB.',
         ];
     }
 
@@ -57,8 +55,7 @@ class UpdateCourseTopicRequest extends FormRequest
             'course_id' => 'course',
             'topic_name' => 'topic name',
             'description' => 'description',
-            'topic_pic' => 'topic picture',
-            'attachment' => 'attachment',
+            'attachments' => 'attachments',
             'active_status' => 'active status',
         ];
     }

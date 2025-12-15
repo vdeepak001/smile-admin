@@ -27,7 +27,7 @@ class CourseTopicController extends Controller
     public function create()
     {
         $courses = Course::where('active_status', true)
-            ->where('course_type', 'college')
+
             ->orderBy('course_name')
             ->get();
         
@@ -44,14 +44,18 @@ class CourseTopicController extends Controller
         $validated['inserted_by'] = Auth::id();
         $validated['inserted_on'] = now();
 
-        // Handle topic picture upload
-        if ($request->hasFile('topic_pic')) {
-            $validated['topic_pic'] = $request->file('topic_pic')->store('topic-pics', 'public');
-        }
-
-        // Handle attachment upload
-        if ($request->hasFile('attachment')) {
-            $validated['attachment'] = $request->file('attachment')->store('topic-attachments', 'public');
+        // Handle multiple attachments upload
+        if ($request->hasFile('attachments')) {
+            $attachments = [];
+            foreach ($request->file('attachments') as $file) {
+                $originalName = $file->getClientOriginalName();
+                $storedPath = $file->store('topic-attachments', 'public');
+                $attachments[] = [
+                    'path' => $storedPath,
+                    'original_name' => $originalName
+                ];
+            }
+            $validated['attachment'] = json_encode($attachments);
         }
 
         $topic = CourseTopic::create($validated);
@@ -79,7 +83,6 @@ class CourseTopicController extends Controller
     public function edit(CourseTopic $courseTopic)
     {
         $courses = Course::where('active_status', true)
-            ->where('course_type', 'college')
             ->orderBy('course_name')
             ->get();
         
@@ -96,22 +99,28 @@ class CourseTopicController extends Controller
         $validated['updated_by'] = Auth::id();
         $validated['updated_on'] = now();
 
-        // Handle topic picture upload
-        if ($request->hasFile('topic_pic')) {
-            if ($courseTopic->topic_pic) {
-                Storage::disk('public')->delete($courseTopic->topic_pic);
-            }
-            $validated['topic_pic'] = $request->file('topic_pic')->store('topic-pics', 'public');
-        } else {
-            unset($validated['topic_pic']);
-        }
-
-        // Handle attachment upload
-        if ($request->hasFile('attachment')) {
+        // Handle multiple attachments upload
+        if ($request->hasFile('attachments')) {
+            // Delete old attachments
             if ($courseTopic->attachment) {
-                Storage::disk('public')->delete($courseTopic->attachment);
+                $oldAttachments = json_decode($courseTopic->attachment, true);
+                if (is_array($oldAttachments)) {
+                    foreach ($oldAttachments as $oldFile) {
+                        Storage::disk('public')->delete($oldFile['path']);
+                    }
+                }
             }
-            $validated['attachment'] = $request->file('attachment')->store('topic-attachments', 'public');
+            
+            $attachments = [];
+            foreach ($request->file('attachments') as $file) {
+                $originalName = $file->getClientOriginalName();
+                $storedPath = $file->store('topic-attachments', 'public');
+                $attachments[] = [
+                    'path' => $storedPath,
+                    'original_name' => $originalName
+                ];
+            }
+            $validated['attachment'] = json_encode($attachments);
         } else {
             unset($validated['attachment']);
         }
@@ -164,12 +173,14 @@ class CourseTopicController extends Controller
     {
         $courseTopic = CourseTopic::onlyTrashed()->findOrFail($id);
 
-        // Delete files if they exist
-        if ($courseTopic->topic_pic) {
-            Storage::disk('public')->delete($courseTopic->topic_pic);
-        }
+        // Delete attachments if they exist
         if ($courseTopic->attachment) {
-            Storage::disk('public')->delete($courseTopic->attachment);
+            $attachments = json_decode($courseTopic->attachment, true);
+            if (is_array($attachments)) {
+                foreach ($attachments as $file) {
+                    Storage::disk('public')->delete($file['path']);
+                }
+            }
         }
 
         $courseTopic->forceDelete();

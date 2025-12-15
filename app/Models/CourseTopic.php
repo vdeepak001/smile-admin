@@ -18,7 +18,6 @@ class CourseTopic extends Model
         'course_id',
         'topic_name',
         'description',
-        'topic_pic',
         'attachment',
         'inserted_by',
         'updated_by',

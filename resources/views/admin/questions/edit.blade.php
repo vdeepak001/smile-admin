@@ -299,10 +299,14 @@
                         <label for="right_answer" class="block text-sm font-medium text-gray-700 mb-2">
                             Right Answer
                         </label>
-                        <input type="text" id="right_answer" name="right_answer"
-                            value="{{ old('right_answer', $question->right_answer) }}"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('right_answer') border-red-500 @enderror"
-                            placeholder="Enter the correct answer">
+                        <select id="right_answer" name="right_answer"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('right_answer') border-red-500 @enderror">
+                            <option value="">Select correct answer</option>
+                            <option value="1" @selected(old('right_answer', $question->right_answer) == '1')>Choice 1</option>
+                            <option value="2" @selected(old('right_answer', $question->right_answer) == '2')>Choice 2</option>
+                            <option value="3" @selected(old('right_answer', $question->right_answer) == '3')>Choice 3</option>
+                            <option value="4" @selected(old('right_answer', $question->right_answer) == '4')>Choice 4</option>
+                        </select>
                         @error('right_answer')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror

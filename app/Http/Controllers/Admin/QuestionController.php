@@ -27,7 +27,7 @@ class QuestionController extends Controller
      */
     public function create()
     {
-        $courses = Course::where('active_status', true)->where('course_type', 'college')->orderBy('course_name')->get();
+        $courses = Course::where('active_status', true)->orderBy('course_name')->get();
         $topics = CourseTopic::where('active_status', true)->orderBy('topic_name')->get();
         
         return view('admin.questions.create', compact('courses', 'topics'));
@@ -92,7 +92,7 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        $courses = Course::where('active_status', true)->where('course_type', 'college')->orderBy('course_name')->get();
+        $courses = Course::where('active_status', true)->orderBy('course_name')->get();
         $topics = CourseTopic::where('active_status', true)->orderBy('topic_name')->get();
         
         return view('admin.questions.edit', compact('question', 'courses', 'topics'));

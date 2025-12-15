@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white shadow-md rounded-lg p-6">
                 <form action="{{ route('course-topics.store') }}" method="POST" class="space-y-6"
                     enctype="multipart/form-data">
@@ -48,44 +48,35 @@
                         </div>
                     </div>
 
-                    <!-- Description -->
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                            Description
-                        </label>
-                        <textarea id="description" name="description" rows="4"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
-                            placeholder="Enter topic description">{{ old('description') }}</textarea>
-                        @error('description')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Topic Picture -->
+                        <!-- Description -->
                         <div>
-                            <label for="topic_pic" class="block text-sm font-medium text-gray-700 mb-2">
-                                Topic Picture
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description
                             </label>
-                            <input type="file" id="topic_pic" name="topic_pic" accept="image/*"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('topic_pic') border-red-500 @enderror">
-                            @error('topic_pic')
+                            <textarea id="description" name="description" rows="4"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('description') border-red-500 @enderror"
+                                placeholder="Enter topic description">{{ old('description') }}</textarea>
+                            @error('description')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                            <p class="mt-1 text-sm text-gray-500">Accepted: JPEG, PNG, JPG, GIF (Max: 2MB)</p>
                         </div>
 
-                        <!-- Attachment -->
+                        <!-- Attachments (Multiple) -->
                         <div>
-                            <label for="attachment" class="block text-sm font-medium text-gray-700 mb-2">
-                                Attachment
+                            <label for="attachments" class="block text-sm font-medium text-gray-700 mb-2">
+                                Attachments (Multiple Files)
                             </label>
-                            <input type="file" id="attachment" name="attachment"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('attachment') border-red-500 @enderror">
-                            @error('attachment')
+                            <input type="file" id="attachments" name="attachments[]" multiple
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('attachments') border-red-500 @enderror @error('attachments.*') border-red-500 @enderror">
+                            @error('attachments')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
-                            <p class="mt-1 text-sm text-gray-500">Accepted: PDF, DOC, DOCX, PPT, PPTX, TXT, ZIP (Max: 10MB)</p>
+                            @error('attachments.*')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            <p class="mt-1 text-sm text-gray-500">Accepted: PDF, DOC, DOCX, PPT, PPTX, TXT, ZIP (Max: 10MB per file)</p>
                         </div>
                     </div>
 

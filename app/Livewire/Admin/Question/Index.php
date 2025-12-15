@@ -149,7 +149,7 @@ class Index extends Component
         $activeCount = Question::where('active_status', true)->count();
         $inactiveCount = Question::where('active_status', false)->count();
 
-        $courses = Course::where('active_status', true)->where('course_type', 'college')->orderBy('course_name')->get();
+        $courses = Course::where('active_status', true)->orderBy('course_name')->get();
         $topics = CourseTopic::where('active_status', true)->orderBy('topic_name')->get();
 
         return view('livewire.admin.question.index', [
