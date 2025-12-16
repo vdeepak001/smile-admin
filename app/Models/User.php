@@ -150,19 +150,12 @@ class User extends Authenticatable
         return $this->isAdmin();
     }
 
-    // public function getAvatarUrl(): ?string
-    // {
-    //     return $this->avatar
-    //         ? Storage::disk('public')->url('avatars/' . $this->avatar)
-    //         : null;
-    // }
-
     public function getAvatarUrl(): ?string
-{
-    return $this->avatar
-        ? asset('storage/avatars/'.$this->avatar)
-        : null;
-}
+    {
+        return $this->avatar
+            ? Storage::disk('public')->url('avatars/' . $this->avatar)
+            : null;
+    }
 
     public function getNameAttribute(): string
     {
