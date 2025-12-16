@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         // Core seeders
         $this->call([
             AdminSeeder::class,
-            CollegeSeeder::class,
-            CourseSeeder::class,
-            StudentSeeder::class,
+            // CollegeSeeder::class,
+            // CourseSeeder::class,
+            // StudentSeeder::class,
         ]);
     }
 }
