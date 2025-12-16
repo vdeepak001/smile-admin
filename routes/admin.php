@@ -13,8 +13,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
         $totalUsers = \App\Models\User::count();
         $completedCourses = \App\Models\AssignedCourse::where('completion_status', 'completed')->count();
         $totalStudents = \App\Models\Student::where('active_status', true)->count();
+        $totalQuestions = \App\Models\Question::where('active_status', true)->count();
         
-        return view('admin.dashboard', compact('totalColleges', 'activeCourses', 'totalUsers', 'completedCourses', 'totalStudents'));
+        return view('admin.dashboard', compact('totalColleges', 'activeCourses', 'totalUsers', 'completedCourses', 'totalStudents', 'totalQuestions'));
     })->name('admin.dashboard');
 
     // College Info Routes
