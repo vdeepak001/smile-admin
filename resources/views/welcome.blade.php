@@ -655,7 +655,7 @@
                 <li><a href="#about">About</a></li>
                 @if (Route::has('login'))
                     @auth
-                        <li><a href="{{ url('/dashboard') }}" class="btn-primary">Dashboard</a></li>
+                        <li><a href="{{ auth()->user()->dashboardUrl() }}" class="btn-primary">Dashboard</a></li>
                     @else
                         <li><a href="{{ route('login') }}" class="btn-secondary">Login</a></li>
                     @endauth
@@ -672,7 +672,7 @@
 
             <div class="hero-buttons">
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="btn-primary">Go to Dashboard</a>
+                    <a href="{{ auth()->user()->dashboardUrl() }}" class="btn-primary">Go to Dashboard</a>
                 @else
                     <a href="{{ route('login') }}" class="btn-secondary">Sign In</a>
                 @endauth
