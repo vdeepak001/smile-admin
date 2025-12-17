@@ -52,7 +52,6 @@
                             class="block pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg">
                             <option value="">All Types</option>
                             <option value="multiple_choice">Multiple Choice</option>
-                            <option value="true_false">True/False</option>
                             <option value="short_answer">Short Answer</option>
                         </select>
 
@@ -159,12 +158,10 @@
                                             @php
                                                 $typeColors = [
                                                     'multiple_choice' => 'bg-blue-100 text-blue-800',
-                                                    'true_false' => 'bg-green-100 text-green-800',
                                                     'short_answer' => 'bg-purple-100 text-purple-800',
                                                 ];
                                                 $typeLabels = [
                                                     'multiple_choice' => 'Multiple Choice',
-                                                    'true_false' => 'True/False',
                                                     'short_answer' => 'Short Answer',
                                                 ];
                                             @endphp
