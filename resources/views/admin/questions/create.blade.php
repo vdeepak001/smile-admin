@@ -64,7 +64,6 @@
                                 required>
                                 <option value="">Select type</option>
                                 <option value="multiple_choice" @selected(old('question_type') == 'multiple_choice')>Multiple Choice</option>
-                                <option value="true_false" @selected(old('question_type') == 'true_false')>True/False</option>
                                 <option value="short_answer" @selected(old('question_type') == 'short_answer')>Short Answer</option>
                             </select>
                             @error('question_type')
@@ -141,7 +140,7 @@
                     </div>
 
                     <!-- Answer Choices -->
-                    <div class="border-t pt-6">
+                    <div id="answer-choices-section" class="border-t pt-6" style="display: none;">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Answer Choices</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,7 +251,7 @@
                     </div>
 
                     <!-- Right Answer -->
-                    <div>
+                    <div id="right-answer-section" style="display: none;">
                         <label for="right_answer" class="block text-sm font-medium text-gray-700 mb-2">
                             Right Answer
                         </label>
@@ -308,4 +307,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionTypeSelect = document.getElementById('question_type');
+            const answerChoicesSection = document.getElementById('answer-choices-section');
+            const rightAnswerSection = document.getElementById('right-answer-section');
+
+            function toggleSections() {
+                const selectedType = questionTypeSelect.value;
+                
+                if (selectedType === 'multiple_choice') {
+                    answerChoicesSection.style.display = 'block';
+                    rightAnswerSection.style.display = 'block';
+                } else {
+                    answerChoicesSection.style.display = 'none';
+                    rightAnswerSection.style.display = 'none';
+                }
+            }
+
+            // Initial check on page load
+            toggleSections();
+
+            // Listen for changes
+            questionTypeSelect.addEventListener('change', toggleSections);
+        });
+    </script>
 </x-app-layout>

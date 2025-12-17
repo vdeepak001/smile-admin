@@ -120,7 +120,7 @@
             </div>
 
             <!-- Answer Choices Card -->
-            @if($question->choice_1 || $question->choice_2 || $question->choice_3 || $question->choice_4)
+            @if($question->question_type === 'multiple_choice' && ($question->choice_1 || $question->choice_2 || $question->choice_3 || $question->choice_4))
                 <div class="bg-white shadow-md rounded-lg p-6 mb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Answer Choices</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -202,14 +202,22 @@
 
             <!-- Right Answer & Reasoning Card -->
             <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Answer & Reasoning</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    @if($question->question_type === 'short_answer')
+                        Explanation
+                    @else
+                        Answer & Reasoning
+                    @endif
+                </h3>
                 <div class="space-y-4">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 mb-2">Correct Answer</p>
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <p class="text-lg font-semibold text-green-900">{{ $question->right_answer ?? 'Not specified' }}</p>
+                    @if($question->question_type === 'multiple_choice')
+                        <div>
+                            <p class="text-sm font-medium text-gray-600 mb-2">Correct Answer</p>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <p class="text-lg font-semibold text-green-900">{{ $question->right_answer ?? 'Not specified' }}</p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     @if($question->reasoning)
                         <div>
                             <p class="text-sm font-medium text-gray-600 mb-2">Reasoning/Explanation</p>
