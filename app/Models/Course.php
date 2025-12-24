@@ -62,6 +62,11 @@ class Course extends Model
         return $this->hasMany(Marks::class, 'course_id', 'course_id');
     }
 
+    public function colleges()
+    {
+        return $this->belongsToMany(CollegeInfo::class, 'college_course', 'course_id', 'college_id');
+    }
+
     public function insertedBy()
     {
         return $this->belongsTo(User::class, 'inserted_by');

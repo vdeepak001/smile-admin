@@ -23,7 +23,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('college-info/{collegeInfo}/restore', [CollegeInfoController::class, 'restore'])->name('college-info.restore');
     Route::delete('college-info/{collegeInfo}/force-delete', [CollegeInfoController::class, 'forceDelete'])->name('college-info.force-delete');
 
-    // Course Routes
+    // Course Routes - IMPORTANT: Specific routes must come BEFORE resource routes
+    Route::get('courses/by-college', [StudentController::class, 'getCoursesByCollege'])->name('courses.by-college');
     Route::resource('courses', CourseController::class);
     Route::post('courses/{course}/restore', [CourseController::class, 'restore'])->name('courses.restore');
     Route::delete('courses/{course}/force-delete', [CourseController::class, 'forceDelete'])->name('courses.force-delete');

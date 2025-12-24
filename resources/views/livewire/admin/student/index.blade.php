@@ -67,14 +67,14 @@
                         <!-- Action Buttons Group -->
                         <div class="flex items-center gap-3 flex-shrink-0">
                             <!-- Add New Button -->
-                            <a href="{{ route('students.create') }}"
+                            <!-- <a href="{{ route('students.create') }}"
                                 class="inline-flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg whitespace-nowrap">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
                                     </path>
                                 </svg>
                                 Add Student
-                            </a>
+                            </a> -->
 
                             <!-- Bulk Import Button -->
                             <a href="{{ route('students.import.form') }}"

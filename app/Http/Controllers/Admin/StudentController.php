@@ -273,7 +273,12 @@ class StudentController extends Controller
 
     public function showImport()
     {
-        return view('admin.students.import');
+        $colleges = CollegeInfo::where('active_status', true)->get();
+        $courses = Course::where('active_status', true)
+            ->where('course_type', 'college')
+            ->get();
+        
+        return view('admin.students.import', compact('colleges', 'courses'));
     }
 
     public function showCourses(Student $student)
@@ -291,6 +296,8 @@ class StudentController extends Controller
     public function importBulk(\App\Http\Requests\Admin\Student\BulkImportStudentRequest $request)
     {
         $file = $request->file('csv_file');
+        $collegeId = $request->input('college_id');
+        $courseIds = $request->input('course_ids', []);
         $successCount = 0;
         $errors = [];
         $studentsData = [];
@@ -306,7 +313,7 @@ class StudentController extends Controller
 
                     $data = array_combine($header, $row);
 
-                    if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['college_id'])) {
+                    if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email'])) {
                         $errors[] = "Row {$rowNumber}: Missing required fields";
                         continue;
                     }
@@ -327,7 +334,7 @@ class StudentController extends Controller
             }
 
             if (!empty($studentsData)) {
-                DB::transaction(function () use ($studentsData, &$successCount) {
+                DB::transaction(function () use ($studentsData, $collegeId, $courseIds, &$successCount) {
                     foreach ($studentsData as $data) {
                         $password = \Illuminate\Support\Str::random(10);
 
@@ -337,7 +344,7 @@ class StudentController extends Controller
                             'email' => $data['email'],
                             'password' => bcrypt($password),
                             'phone_number' => $data['phone_number'] ?? null,
-                            'college_id' => $data['college_id'],
+                            'college_id' => $collegeId, // Use selected college
                             'role' => User::ROLE_STUDENT,
                             'active_status' => isset($data['active_status']) ? (bool)$data['active_status'] : true,
                             'created_by' => auth()->id(),
@@ -345,14 +352,14 @@ class StudentController extends Controller
 
 
                         // Generate enrollment number using college code, start year, and sequential number
-                        $college = CollegeInfo::find($data['college_id']);
+                        $college = CollegeInfo::find($collegeId);
                         $collegeCode = $college->college_code ?? 'COL';
                         $startYear = $data['start_year'] ?? date('Y');
                         
                         // Get the count of students with the same start_year to generate sequential number
                         $studentCount = Student::where('start_year', $startYear)
-                            ->whereHas('user', function($query) use ($data) {
-                                $query->where('college_id', $data['college_id']);
+                            ->whereHas('user', function($query) use ($collegeId) {
+                                $query->where('college_id', $collegeId);
                             })
                             ->count();
                         
@@ -376,6 +383,19 @@ class StudentController extends Controller
                             'created_by' => auth()->id(),
                         ]);
 
+                        // Assign selected courses to the student
+                        if (!empty($courseIds)) {
+                            foreach ($courseIds as $courseId) {
+                                AssignedCourse::create([
+                                    'student_id' => $user->id,
+                                    'course_id' => $courseId,
+                                    'completion_status' => 'not_started',
+                                    'assigned_by' => auth()->id(),
+                                    'assigned_on' => now(),
+                                ]);
+                            }
+                        }
+
                         Mail::send(new StudentRegistrationMail($student, $data['email'], $password));
                         $successCount++;
                     }
@@ -394,5 +414,30 @@ class StudentController extends Controller
             return redirect()->route('students.import.form')
                 ->withToast(['type' => 'error', 'message' => 'Import failed: ' . $e->getMessage()]);
         }
+    }
+
+    public function getCoursesByCollege(Request $request)
+    {
+        $collegeId = $request->input('college_id');
+        
+        if (!$collegeId) {
+            return response()->json([]);
+        }
+        
+        $courses = Course::where('active_status', true)
+            ->where('course_type', 'college')
+            ->whereHas('colleges', function($query) use ($collegeId) {
+                $query->where('college_course.college_id', $collegeId);
+            })
+            ->get(['course_id', 'course_name', 'course_code'])
+            ->map(function($course) {
+                return [
+                    'course_id' => $course->course_id,
+                    'course_name' => $course->course_name,
+                    'course_code' => $course->course_code,
+                ];
+            });
+        
+        return response()->json($courses);
     }
 }

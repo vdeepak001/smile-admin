@@ -23,6 +23,9 @@ class BulkImportStudentRequest extends FormRequest
     {
         return [
             'csv_file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'], // 5MB max
+            'college_id' => ['required', 'exists:college_info,college_id'],
+            'course_ids' => ['required', 'array', 'min:1'],
+            'course_ids.*' => ['required', 'exists:courses,course_id'],
         ];
     }
 
@@ -32,6 +35,11 @@ class BulkImportStudentRequest extends FormRequest
             'csv_file.required' => 'Please upload a CSV file.',
             'csv_file.mimes' => 'The file must be a CSV file.',
             'csv_file.max' => 'The file size must not exceed 5MB.',
+            'college_id.required' => 'Please select a college.',
+            'college_id.exists' => 'The selected college is invalid.',
+            'course_ids.required' => 'Please select at least one course.',
+            'course_ids.min' => 'Please select at least one course.',
+            'course_ids.*.exists' => 'One or more selected courses are invalid.',
         ];
     }
 }
