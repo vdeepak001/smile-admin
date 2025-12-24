@@ -300,6 +300,7 @@ class StudentController extends Controller
         $courseIds = $request->input('course_ids', []);
         $successCount = 0;
         $errors = [];
+        $mailErrors = [];
         $studentsData = [];
 
         try {
@@ -334,7 +335,7 @@ class StudentController extends Controller
             }
 
             if (!empty($studentsData)) {
-                DB::transaction(function () use ($studentsData, $collegeId, $courseIds, &$successCount) {
+                DB::transaction(function () use ($studentsData, $collegeId, $courseIds, &$successCount, &$mailErrors) {
                     foreach ($studentsData as $data) {
                         $password = \Illuminate\Support\Str::random(10);
 
@@ -396,18 +397,36 @@ class StudentController extends Controller
                             }
                         }
 
-                        Mail::send(new StudentRegistrationMail($student, $data['email'], $password));
+                        // Load relationships before sending mail to avoid errors
+                        $student->load(['user.college']);
+
+                        // Send registration email with error handling
+                        try {
+                            Mail::send(new StudentRegistrationMail($student, $data['email'], $password));
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error('Failed to send registration email', [
+                                'student_id' => $student->student_id,
+                                'email' => $data['email'],
+                                'error' => $e->getMessage()
+                            ]);
+                            $mailErrors[] = "Failed to send email to {$data['email']}: {$e->getMessage()}";
+                        }
+
                         $successCount++;
                     }
                 });
             }
 
             $message = "Successfully imported {$successCount} student(s).";
-            if (!empty($errors)) $message .= " " . count($errors) . " error(s) occurred.";
+            if (!empty($errors)) $message .= " " . count($errors) . " validation error(s) occurred.";
+            if (!empty($mailErrors)) $message .= " " . count($mailErrors) . " email(s) failed to send (students were still created).";
+
+            // Combine all errors for display
+            $allErrors = array_merge($errors, $mailErrors);
 
             return redirect()->route('students.import.form')
                 ->with('success', $message)
-                ->with('errors_list', $errors)
+                ->with('errors_list', $allErrors)
                 ->with('success_count', $successCount);
 
         } catch (\Exception $e) {
