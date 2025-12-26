@@ -143,7 +143,8 @@
             <div class="mb-4">
                 <p class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Settings</p>
 
-                 <a href="{{ route('degrees.index') }}"
+                @if ($isAdmin)
+                    <a href="{{ route('degrees.index') }}"
                         class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
                     {{ Route::currentRouteName() === 'degrees.index' || Route::currentRouteName() === 'degrees.create' || Route::currentRouteName() === 'degrees.edit' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,6 +154,7 @@
                         </svg>
                         <span class="font-medium">Degrees</span>
                     </a>
+                @endif
 
                 <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
