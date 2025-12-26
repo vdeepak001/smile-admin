@@ -81,10 +81,16 @@ class Index extends Component
         if ($this->search) {
             $query->where(function ($q) {
                 $q->where('college_name', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('user', function ($userQuery) {
-                        $userQuery->where('email', 'like', '%' . $this->search . '%');
-                    })
+                    ->orWhere('college_code', 'like', '%' . $this->search . '%')
                     ->orWhere('contact_person', 'like', '%' . $this->search . '%');
+                    
+                // For email search, use email_hash for exact matches
+                if (filter_var($this->search, FILTER_VALIDATE_EMAIL)) {
+                    $emailHash = hash('sha256', strtolower(trim($this->search)));
+                    $q->orWhereHas('user', function ($userQuery) use ($emailHash) {
+                        $userQuery->where('email_hash', $emailHash);
+                    });
+                }
             });
         }
 
@@ -105,10 +111,16 @@ class Index extends Component
         if ($this->search) {
             $baseQuery->where(function ($q) {
                 $q->where('college_name', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('user', function ($userQuery) {
-                        $userQuery->where('email', 'like', '%' . $this->search . '%');
-                    })
+                    ->orWhere('college_code', 'like', '%' . $this->search . '%')
                     ->orWhere('contact_person', 'like', '%' . $this->search . '%');
+                    
+                // For email search, use email_hash for exact matches
+                if (filter_var($this->search, FILTER_VALIDATE_EMAIL)) {
+                    $emailHash = hash('sha256', strtolower(trim($this->search)));
+                    $q->orWhereHas('user', function ($userQuery) use ($emailHash) {
+                        $userQuery->where('email_hash', $emailHash);
+                    });
+                }
             });
         }
 

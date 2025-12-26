@@ -324,7 +324,9 @@ class StudentController extends Controller
                         continue;
                     }
 
-                    if (User::where('email', $data['email'])->exists()) {
+                    // Check if email already exists using email_hash
+                    $emailHash = hash('sha256', strtolower(trim($data['email'])));
+                    if (User::where('email_hash', $emailHash)->exists()) {
                         $errors[] = "Row {$rowNumber}: Email exists - {$data['email']}";
                         continue;
                     }

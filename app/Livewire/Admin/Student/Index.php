@@ -100,12 +100,15 @@ class Index extends Component
         if ($this->search) {
             $query->where(function (Builder $q) {
                 $q->where('enrollment_no', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('user', function (Builder $userQ) {
-                      $userQ->where('first_name', 'like', '%' . $this->search . '%')
-                            ->orWhere('last_name', 'like', '%' . $this->search . '%')
-                            ->orWhere('email', 'like', '%' . $this->search . '%')
-                            ->orWhere(DB::raw("CONCAT(first_name, ' ', last_name)"), 'like', '%' . $this->search . '%');
-                  });
+                  ->orWhere('roll_number', 'like', '%' . $this->search . '%');
+                  
+                // For email search, use email_hash for exact matches
+                if (filter_var($this->search, FILTER_VALIDATE_EMAIL)) {
+                    $emailHash = hash('sha256', strtolower(trim($this->search)));
+                    $q->orWhereHas('user', function (Builder $userQ) use ($emailHash) {
+                        $userQ->where('email_hash', $emailHash);
+                    });
+                }
             });
         }
 

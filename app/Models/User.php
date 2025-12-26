@@ -24,6 +24,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'email',
+        'email_hash',
         'password',
         'role',
         'first_name',
@@ -47,6 +48,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'email_hash',
     ];
 
     /**
@@ -59,12 +61,30 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'email' => 'encrypted',
+            'first_name' => 'encrypted',
+            'last_name' => 'encrypted',
+            'phone_number' => 'encrypted',
             'active_status' => 'boolean',
             'college_rights' => 'boolean',
             'course_rights' => 'boolean',
             'students_rights' => 'boolean',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Boot method to automatically generate email_hash when email is set.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            if ($user->isDirty('email') && $user->email) {
+                $user->email_hash = hash('sha256', strtolower(trim($user->email)));
+            }
+        });
     }
 
     // Relationships

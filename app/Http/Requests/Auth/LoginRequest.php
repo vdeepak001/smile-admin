@@ -41,7 +41,14 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // Hash the input email to find the user
+        $emailHash = hash('sha256', strtolower(trim($this->string('email'))));
+        
+        // Find user by email hash
+        $user = \App\Models\User::where('email_hash', $emailHash)->first();
+        
+        // Verify password
+        if (!$user || !\Illuminate\Support\Facades\Hash::check($this->string('password'), $user->password)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -49,8 +56,10 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Log the user in
+        Auth::login($user, $this->boolean('remember'));
+
         // Check if user's active_status is 1
-        $user = Auth::user();
         if ($user->active_status != 1) {
             Auth::logout();
             
