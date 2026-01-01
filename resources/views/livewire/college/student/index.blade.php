@@ -234,7 +234,7 @@
                                         Assigned On
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Assigned By
+                                        Valid Until
                                     </th>
                                 </tr>
                             </thead>
@@ -273,7 +273,7 @@
                                             {{ $assignedCourse->assigned_on ? \Carbon\Carbon::parse($assignedCourse->assigned_on)->format('M d, Y') : 'N/A' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ $assignedCourse->assignedBy->name ?? 'System' }}
+                                            {{ $assignedCourse->valid_until ? \Carbon\Carbon::parse($assignedCourse->valid_until)->format('M d, Y') : 'N/A' }}
                                         </td>
                                     </tr>
                                 @endforeach
