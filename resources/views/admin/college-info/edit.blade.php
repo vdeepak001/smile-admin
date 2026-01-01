@@ -79,6 +79,23 @@
                                     @enderror
                                 </div>
 
+                                <!-- College Package -->
+                                <div>
+                                    <label for="college_package" class="block text-sm font-medium text-gray-700 mb-2">
+                                        College Package
+                                    </label>
+                                    <select id="college_package" name="college_package"
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('college_package') border-red-500 @enderror">
+                                        <option value="">Select Package (Optional)</option>
+                                        <option value="1" @selected(old('college_package', $collegeInfo->college_package) == 1)>Package 1</option>
+                                        <option value="2" @selected(old('college_package', $collegeInfo->college_package) == 2)>Package 2</option>
+                                        <option value="3" @selected(old('college_package', $collegeInfo->college_package) == 3)>Package 3</option>
+                                    </select>
+                                    @error('college_package')
+                                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
                                   <!-- Active Status -->
                                 <div class="flex items-center pt-2">
                                     <input type="hidden" name="active_status" value="0">

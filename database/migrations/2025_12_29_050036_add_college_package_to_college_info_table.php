@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'email_hash')) {
-                $table->string('email_hash')->nullable()->after('email')->index();
-            }
+        Schema::table('college_info', function (Blueprint $table) {
+            $table->tinyInteger('college_package')->nullable()->after('college_code');
         });
     }
 
@@ -23,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('email_hash');
+        Schema::table('college_info', function (Blueprint $table) {
+            $table->dropColumn('college_package');
         });
     }
 };

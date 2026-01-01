@@ -28,6 +28,7 @@ class UpdateCollegeInfoRequest extends FormRequest
             'email' => 'required|email|max:255|unique:users,email,' . $userId . ',id',
             // 'password' => 'nullable|string|min:8|confirmed', // Removed from form
             'contact_person' => 'required|string|max:255',
+            'college_package' => 'nullable|integer|in:1,2,3',
             'course_ids' => 'required|array',
             'course_ids.*' => 'exists:courses,course_id',
             'max_students' => 'required|integer|min:1|max:10000',

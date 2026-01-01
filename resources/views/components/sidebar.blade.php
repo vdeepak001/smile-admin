@@ -27,6 +27,7 @@
         $dashboardRoute = Auth::user()?->dashboardRouteName();
         $dashboardUrl = $dashboardRoute && Route::has($dashboardRoute) ? route($dashboardRoute) : url('/');
         $isAdmin = Auth::user()?->isAdmin();
+        $isCollege = Auth::user()?->isCollege();
     @endphp
 
     <!-- Navigation Menu -->
@@ -45,6 +46,35 @@
 
             <!-- Divider -->
             <div class="my-4 border-t border-slate-700"></div>
+
+            <!-- College Students Section (College Users Only) -->
+            @if ($isCollege)
+                <div class="mb-4">
+                    <p class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Management</p>
+
+                    <a href="{{ route('college.students.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
+                        {{ Route::currentRouteName() === 'college.students.index' || Route::currentRouteName() === 'college.students.edit' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                        </svg>
+                        <span class="font-medium">College Students</span>
+                    </a>
+
+                    <a href="{{ route('college.course-reports.index') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
+                        {{ Route::currentRouteName() === 'college.course-reports.index' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span class="font-medium">Course Reports</span>
+                    </a>
+                </div>
+
+                <!-- Divider -->
+                <div class="my-4 border-t border-slate-700"></div>
+            @endif
 
             <!-- College Info Section -->
             @if ($isAdmin)

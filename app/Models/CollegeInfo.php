@@ -18,6 +18,7 @@ class CollegeInfo extends Model
         'college_name',
         'college_number',
         'college_code',
+        'college_package',
         'user_id',
         'contact_person',
         // 'course_id', // Removed

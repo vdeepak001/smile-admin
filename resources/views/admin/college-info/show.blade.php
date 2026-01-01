@@ -53,6 +53,16 @@
                         <p class="text-lg font-semibold text-gray-900">{{ $collegeInfo->contact_person }}</p>
                     </div>
                     <div>
+                        <p class="text-sm font-medium text-gray-600">College Package</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            @if($collegeInfo->college_package)
+                                Package {{ $collegeInfo->college_package }}
+                            @else
+                                N/A
+                            @endif
+                        </p>
+                    </div>
+                    <div>
                         <p class="text-sm font-medium text-gray-600">Status</p>
                         <p class="mt-1">
                             @if ($collegeInfo->active_status)
