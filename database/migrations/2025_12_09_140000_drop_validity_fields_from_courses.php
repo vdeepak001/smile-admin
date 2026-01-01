@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            $table->dropColumn(['valid_from', 'valid_until']);
+            if (Schema::hasColumn('courses', 'valid_from')) {
+                $table->dropColumn('valid_from');
+            }
+            if (Schema::hasColumn('courses', 'valid_until')) {
+                $table->dropColumn('valid_until');
+            }
         });
     }
 

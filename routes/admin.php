@@ -23,6 +23,17 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('college-info/{collegeInfo}/restore', [CollegeInfoController::class, 'restore'])->name('college-info.restore');
     Route::delete('college-info/{collegeInfo}/force-delete', [CollegeInfoController::class, 'forceDelete'])->name('college-info.force-delete');
 
+    // College Batch Routes
+    Route::get('college/{collegeId}/batches', function($collegeId) {
+        return view('admin.college-batch.index', compact('collegeId'));
+    })->name('college-batches.index');
+    Route::get('college/{collegeId}/batches/create', function($collegeId) {
+        return view('admin.college-batch.create', compact('collegeId'));
+    })->name('college-batches.create');
+    Route::get('college/{collegeId}/batches/{batchId}/edit', function($collegeId, $batchId) {
+        return view('admin.college-batch.edit', compact('collegeId', 'batchId'));
+    })->name('college-batches.edit');
+
     // Course Routes - IMPORTANT: Specific routes must come BEFORE resource routes
     Route::get('courses/by-college', [StudentController::class, 'getCoursesByCollege'])->name('courses.by-college');
     Route::resource('courses', CourseController::class);
