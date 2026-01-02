@@ -79,4 +79,19 @@ class CollegeBatch extends Model
         
         return $initials;
     }
+
+    // Relationship with students
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'batch_student', 'batch_id', 'student_id')
+            ->withPivot('assigned_by', 'assigned_at')
+            ->withTimestamps();
+    }
+
+    // Extract year from batch_id (format: COL-2022-001)
+    public function getBatchYear()
+    {
+        $parts = explode('-', $this->batch_id);
+        return isset($parts[1]) ? (int)$parts[1] : null;
+    }
 }

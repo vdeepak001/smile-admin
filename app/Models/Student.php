@@ -68,4 +68,11 @@ class Student extends Model
         )
         ->withPivot('completion_status', 'assigned_by', 'assigned_on');
     }
+
+    public function batches()
+    {
+        return $this->belongsToMany(CollegeBatch::class, 'batch_student', 'student_id', 'batch_id')
+            ->withPivot('assigned_by', 'assigned_at')
+            ->withTimestamps();
+    }
 }

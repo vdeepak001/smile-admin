@@ -33,6 +33,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('college/{collegeId}/batches/{batchId}/edit', function($collegeId, $batchId) {
         return view('admin.college-batch.edit', compact('collegeId', 'batchId'));
     })->name('college-batches.edit');
+    Route::get('college/{collegeId}/batches/{batchId}/students', function($collegeId, $batchId) {
+        return view('admin.college-batch.manage-students', compact('collegeId', 'batchId'));
+    })->name('college-batches.manage-students');
 
     // Course Routes - IMPORTANT: Specific routes must come BEFORE resource routes
     Route::get('courses/by-college', [StudentController::class, 'getCoursesByCollege'])->name('courses.by-college');
