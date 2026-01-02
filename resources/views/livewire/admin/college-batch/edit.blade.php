@@ -1,6 +1,6 @@
 <div>
     <div class="py-12">
-        <div class="w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <div class="mb-6">
                 <nav class="flex" aria-label="Breadcrumb">

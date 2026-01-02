@@ -18,6 +18,7 @@ class Create extends Component
     public $batch_type = 1;
     public $availableCourses = [];
 
+   
     public function mount($collegeId)
     {
         $this->collegeId = $collegeId;
@@ -82,5 +83,9 @@ class Create extends Component
     public function render()
     {
         return view('livewire.admin.college-batch.create');
+    }
+    public function setBatchType($type)
+    {
+        $this->batch_type = (int) $type;
     }
 }

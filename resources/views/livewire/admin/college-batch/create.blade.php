@@ -1,6 +1,6 @@
 <div>
     <div class="py-12">
-        <div class="w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-[95%] mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Breadcrumb -->
             <div class="mb-6">
                 <nav class="flex" aria-label="Breadcrumb">
@@ -120,28 +120,28 @@
                         <!-- Batch Type + Actions - Right Column (50%) -->
                         <div class="space-y-6">
                             <!-- Batch Type -->
-                            <div>
+                       <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Batch Type <span class="text-red-500">*</span>
                                 </label>
                                 <div class="grid grid-cols-3 gap-4">
-                                    <label class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
+                                    <label wire:click="setBatchType(1)" class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
                                         {{ $batch_type == 1 ? 'border-purple-600 bg-purple-50' : 'border-gray-300 hover:border-purple-300' }}">
-                                        <input type="radio" wire:model.live="batch_type" value="1" class="sr-only">
+                                        <input type="radio" name="batch_type" value="1" wire:model="batch_type" class="sr-only">
                                         <div class="text-center">
                                             <div class="text-lg font-semibold {{ $batch_type == 1 ? 'text-purple-600' : 'text-gray-700' }}">Type 1</div>
                                         </div>
                                     </label>
-                                    <label class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
+                                    <label wire:click="setBatchType(2)" class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
                                         {{ $batch_type == 2 ? 'border-indigo-600 bg-indigo-50' : 'border-gray-300 hover:border-indigo-300' }}">
-                                        <input type="radio" wire:model.live="batch_type" value="2" class="sr-only">
+                                        <input type="radio" name="batch_type" value="2" wire:model="batch_type" class="sr-only">
                                         <div class="text-center">
                                             <div class="text-lg font-semibold {{ $batch_type == 2 ? 'text-indigo-600' : 'text-gray-700' }}">Type 2</div>
                                         </div>
                                     </label>
-                                    <label class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
+                                    <label wire:click="setBatchType(3)" class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
                                         {{ $batch_type == 3 ? 'border-pink-600 bg-pink-50' : 'border-gray-300 hover:border-pink-300' }}">
-                                        <input type="radio" wire:model.live="batch_type" value="3" class="sr-only">
+                                        <input type="radio" name="batch_type" value="3" wire:model="batch_type" class="sr-only">
                                         <div class="text-center">
                                             <div class="text-lg font-semibold {{ $batch_type == 3 ? 'text-pink-600' : 'text-gray-700' }}">Type 3</div>
                                         </div>
