@@ -33,7 +33,7 @@ class Edit extends Component
         $this->selectedCourses = $this->batch->courses ?? [];
         $this->start_date = $this->batch->start_date->format('Y-m-d');
         $this->end_date = $this->batch->end_date->format('Y-m-d');
-        $this->batch_type = $this->batch->batch_type;
+        $this->batch_type = (int) $this->batch->batch_type;
         
         // Extract year from batch_id (format: CODE-YEAR-SEQ)
         $parts = explode('-', $this->batch_id);
@@ -44,6 +44,11 @@ class Edit extends Component
     {
         // Regenerate batch ID when year changes
         $this->generateBatchId();
+    }
+
+    public function setBatchType($type)
+    {
+        $this->batch_type = (int) $type;
     }
 
     protected function generateBatchId()
