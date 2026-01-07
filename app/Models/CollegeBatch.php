@@ -94,4 +94,10 @@ class CollegeBatch extends Model
         $parts = explode('-', $this->batch_id);
         return isset($parts[1]) ? (int)$parts[1] : null;
     }
+
+    // Relationship with course settings
+    public function courseSettings()
+    {
+        return $this->hasMany(BatchCourseSetting::class, 'batch_id');
+    }
 }

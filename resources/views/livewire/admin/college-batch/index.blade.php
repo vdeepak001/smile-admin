@@ -120,8 +120,15 @@
                                                 @if($batch->courses && count($batch->courses) > 0)
                                                     <div class="flex flex-wrap gap-1">
                                                         @foreach($batch->getCoursesList() as $course)
-                                                            <span class="inline-flex px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded group">
                                                                 {{ $course->course_name }}
+                                                                <a href="{{ route('college-batches.manage-course-topics', [$collegeId, $batch->id, $course->course_id]) }}" 
+                                                                    class="ml-1 text-blue-400 hover:text-blue-600 transition-colors"
+                                                                    title="Schedule Topics">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                                    </svg>
+                                                                </a>
                                                             </span>
                                                         @endforeach
                                                     </div>
