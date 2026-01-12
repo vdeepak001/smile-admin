@@ -18,6 +18,7 @@ class Edit extends Component
     public $start_date;
     public $end_date;
     public $batch_type;
+    public $active_status = true;
     public $availableCourses = [];
 
     public function mount($collegeId, $batchId)
@@ -34,6 +35,7 @@ class Edit extends Component
         $this->start_date = $this->batch->start_date->format('Y-m-d');
         $this->end_date = $this->batch->end_date->format('Y-m-d');
         $this->batch_type = (int) $this->batch->batch_type;
+        $this->active_status = (bool) $this->batch->active_status;
         
         // Extract year from batch_id (format: CODE-YEAR-SEQ)
         $parts = explode('-', $this->batch_id);
@@ -84,6 +86,7 @@ class Edit extends Component
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'batch_type' => $this->batch_type,
+            'active_status' => $this->active_status,
             'updated_by' => auth()->user()->name ?? 'System',
         ]);
 

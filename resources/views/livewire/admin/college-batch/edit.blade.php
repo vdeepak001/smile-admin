@@ -150,6 +150,15 @@
                                 @error('batch_type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
+                            <!-- Active Status Checkbox -->
+                            <div>
+                                <label class="flex items-center space-x-3 cursor-pointer">
+                                    <input type="checkbox" wire:model="active_status"
+                                        class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                    <span class="text-sm font-medium text-gray-700">Active Status</span>
+                                </label>
+                            </div>
+
                             <!-- Form Actions -->
                             <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200">
                                 <a href="{{ route('college-batches.index', $collegeId) }}"

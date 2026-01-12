@@ -25,23 +25,14 @@
                                 <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                                 </svg>
-                                <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">Assign Topics: {{ $course->course_name }}</span>
+                                <span class="ml-1 text-sm font-bold text-gray-900 md:ml-2">{{ $batch->batch_id }}</span>
                             </div>
                         </li>
                     </ol>
                 </nav>
             </div>
 
-            <!-- Header Info -->
-            <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Assigning Topics for {{ $course->course_name }}</h2>
-                        <p class="text-gray-600">Batch: {{ $batch->batch_id }}</p>
-                    </div>
-                </div>
-            </div>
-
+           
             <!-- Batch Information -->
             <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8 border border-gray-100">
                 <div class="overflow-x-auto">
@@ -49,8 +40,8 @@
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch ID</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch Type</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titles Enabled</th>
@@ -59,10 +50,7 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm font-medium text-gray-900">{{ $batch->batch_id }}</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-gray-700">{{ $batch->start_date ? \Carbon\Carbon::parse($batch->start_date)->format('d M Y') : '-' }}</span>
+                                    <span class="text-sm font-bold text-gray-900">{{ $batch->batch_id }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -70,20 +58,18 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="date" wire:model="updated_date" class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-blue-500 focus:border-blue-500">
+                                    <span class="text-sm text-gray-700">{{ $batch->start_date ? \Carbon\Carbon::parse($batch->start_date)->format('d M Y') : '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <select wire:model="batch_type" class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white text-gray-700 focus:ring-blue-500 focus:border-blue-500 min-w-[90px]">
-                                        <option value="1">Type 1</option>
-                                        <option value="2">Type 2</option>
-                                        <option value="3">Type 3</option>
-                                    </select>
+                                    <span class="text-sm text-gray-700">{{ $batch->end_date ? \Carbon\Carbon::parse($batch->end_date)->format('d M Y') : '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <label class="flex items-center cursor-pointer">
-                                        <input type="checkbox" wire:model="titles_enabled" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <span class="ml-2 text-sm text-gray-700">Enable</span>
-                                    </label>
+                                    <span class="text-sm text-gray-700 text-center">Type {{ $batch->batch_type ?? '-' }}</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="text-sm text-center font-semibold {{ $batch->active_status ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $batch->active_status ? 'Enabled' : 'Disabled' }}
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
@@ -113,7 +99,7 @@
                                 <tr class="{{ $index % 2 === 0 ? 'bg-[#F6FAFF]' : 'bg-white' }}">
                                     <td class="px-6 py-4 border-r border-[#E5E9F2] font-bold text-gray-800">{{ $index + 1 }}</td>
                                     <td class="px-6 py-4 border-r border-[#E5E9F2] text-gray-700 font-medium">{{ $topic->topic_name }}</td>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-6 py-4 text-center">
                                         <input type="checkbox" id="topic-{{ $topic->topic_id }}" value="{{ $topic->topic_id }}" 
                                             wire:click="toggleTopic({{ $topic->topic_id }})" 
                                             {{ in_array($topic->topic_id, $selected_topics) ? 'checked' : '' }} 
