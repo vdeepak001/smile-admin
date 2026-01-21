@@ -28,6 +28,7 @@
         $dashboardUrl = $dashboardRoute && Route::has($dashboardRoute) ? route($dashboardRoute) : url('/');
         $isAdmin = Auth::user()?->isAdmin();
         $isCollege = Auth::user()?->isCollege();
+        $isStudent = Auth::user()?->isStudent();
     @endphp
 
     <!-- Navigation Menu -->
@@ -164,6 +165,24 @@
 
                    
                 </div>
+            @endif
+
+            <!-- Student Section -->
+            @if ($isStudent)
+                <div class="mb-4">
+                    <p class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Learning</p>
+
+                    <a href="{{ route('student.my-courses') }}"
+                        class="flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200
+                        {{ Route::currentRouteName() === 'student.my-courses' || Route::currentRouteName() === 'student.course.show' ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z" />
+                        </svg>
+                        <span class="font-medium">My Courses</span>
+                    </a>
+                </div>
+                <!-- Divider -->
+                <div class="my-4 border-t border-slate-700"></div>
             @endif
 
             <!-- Divider -->

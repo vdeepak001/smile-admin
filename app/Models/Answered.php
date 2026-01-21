@@ -19,6 +19,7 @@ class Answered extends Model
         'course_id',
         'topic_id',
         'question_id',
+        'test_type',
         'sequence',
         'answered_choice',
         'answered_status',
