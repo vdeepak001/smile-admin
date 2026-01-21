@@ -52,17 +52,26 @@ class TestPlayer extends Component
                  
                 
         } else {
-            // Pre or Final Test
+            // Pre, Final, Practice, Mock1, Mock2 Tests
             $this->course = \App\Models\Course::where('active_status', true)->findOrFail($this->contextId);
             
             // Limit logic: 
-            // Pre-Test: Always 10 random questions (User Requirement)
-            // Final Test: Use logic from course setting, or default to 10
+            // Pre-Test: Always 10 random questions
+            // Practice: All questions or use course setting
+            // Mock1, Mock2: Use course setting or default to 10
+            // Final Test: Use course setting or default to 10
             
             if ($this->testType === 'pre') {
                 $limit = 10;
+            } elseif ($this->testType === 'practice') {
+                // For practice, use course setting or default to 20 questions
+                $limit = ($this->course->test_questions > 0) ? $this->course->test_questions : 20;
+            } elseif (in_array($this->testType, ['mock1', 'mock2'])) {
+                // For mock tests, use course setting or default to 10
+                $limit = ($this->course->test_questions > 0) ? $this->course->test_questions : 10;
             } else {
-                 $limit = ($this->course->test_questions > 0) ? $this->course->test_questions : 10;
+                // Final test
+                $limit = ($this->course->test_questions > 0) ? $this->course->test_questions : 10;
             }
             
             $this->questionIds = \App\Models\Question::where('course_id', $this->course->course_id)

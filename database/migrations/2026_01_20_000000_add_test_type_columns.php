@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('marks', function (Blueprint $table) {
-            $table->string('test_type')->nullable()->after('course_id')->comment('pre, topic, final');
+            $table->string('test_type')->nullable()->after('course_id')->comment('pre, topic, final, practice, mock1, mock2');
             $table->unsignedBigInteger('topic_id')->nullable()->after('test_type');
             $table->foreign('topic_id')->references('topic_id')->on('course_topics');
         });
 
         Schema::table('answered', function (Blueprint $table) {
-             $table->string('test_type')->nullable()->after('topic_id')->comment('pre, topic, final');
+             $table->string('test_type')->nullable()->after('topic_id')->comment('pre, topic, final, practice, mock1, mock2');
         });
     }
 

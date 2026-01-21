@@ -31,6 +31,7 @@ class User extends Authenticatable
         'last_name',
         'phone_number',
         'avatar',
+        'resume_path',
         'active_status',
         'college_id',
         'created_by',
