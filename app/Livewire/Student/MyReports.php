@@ -33,6 +33,7 @@ class MyReports extends Component
                 $course->total_tests = $totalTests;
                 $course->average_score = round($averageScore, 1);
                 $course->highest_score = $highestScore;
+                $course->latest_completion_at = $marks->max('completed_at');
                 
                 return $course;
             });

@@ -15,11 +15,10 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            <!-- Left Column: Pre-Test -->
-            <div class="col-span-1 space-y-6">
-                
+            <!-- Pre-Test Section -->
+            @if($showPreTest)
                 <!-- Pre-Test Card -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg relative {{ $preTestEnabled ? '' : 'opacity-50 grayscale' }}">
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -52,12 +51,11 @@
                         @endif
                     </div>
                 </div>
+            @endif
 
-            </div>
-
-            <!-- Middle Column: Topics List -->
-            <div class="col-span-1 lg:col-span-1">
-                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <!-- Topic-wise Tests Section -->
+            @if($showTopicTests)
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                         <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 flex items-center">
                             <span class="p-2 bg-blue-100 text-blue-600 rounded-lg mr-3">
@@ -102,11 +100,9 @@
                         @endforelse
                     </div>
                 </div>
-            </div>
+            @endif
 
-            <!-- Right Column: Final Test -->
-            <div class="col-span-1 space-y-6">
-                <!-- Final Test Card -->
+            <!-- Final Test Section -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg relative {{ $finalTestEnabled ? '' : 'opacity-50 grayscale' }}">
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                          <div class="flex items-center space-x-3">
@@ -138,7 +134,6 @@
                         @endif
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>

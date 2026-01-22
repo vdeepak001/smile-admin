@@ -85,10 +85,9 @@ class TestPlayer extends Component
                  abort(404);
             }
             
-            // For topic test, take all questions in random order
+            // For topic test, take ALL questions from the topic (no limit)
             $this->questionIds = \App\Models\Question::where('topic_id', $this->contextId)
                 ->inRandomOrder()
-                ->limit(10)
                 ->pluck('question_id')
                 ->toArray();
                  
@@ -101,7 +100,7 @@ class TestPlayer extends Component
             // Pre-Test: Always 10 random questions
             // Practice: All questions or use course setting
             // Mock1, Mock2: Use course setting or default to 10
-            // Final Test: Use course setting or default to 10
+            // Final Test: Use batch setting or course setting or default to 10
             
             if ($this->testType === 'pre') {
                 $limit = 10;
@@ -112,8 +111,8 @@ class TestPlayer extends Component
                 // For mock tests, use course setting or default to 10
                 $limit = ($this->course->test_questions > 0) ? $this->course->test_questions : 10;
             } else {
-                // Final test
-                $limit = ($this->course->test_questions > 0) ? $this->course->test_questions : 10;
+                // Final test - use batch-based count
+                $limit = $this->getBatchFinalTestCount();
             }
             
             $this->questionIds = \App\Models\Question::where('course_id', $this->course->course_id)
@@ -130,6 +129,32 @@ class TestPlayer extends Component
              session()->flash('error', 'No questions available for this test.');
              return redirect()->route('student.course.show', $this->course->course_id);
         }
+    }
+
+    protected function getBatchFinalTestCount()
+    {
+        $user = auth()->user();
+        $student = $user->student;
+        
+        if (!$student) {
+            // Not a student, use course default
+            return $this->course->test_questions > 0 ? $this->course->test_questions : 10;
+        }
+        
+        // Find batch that includes this course
+        $batch = $student->batches()
+            ->where('active_status', true)
+            ->get()
+            ->first(function ($batch) {
+                return in_array($this->course->course_id, $batch->courses ?? []);
+            });
+        
+        if ($batch && $batch->final_test_questions_count > 0) {
+            return $batch->final_test_questions_count;
+        }
+        
+        // Fall back to course setting or default
+        return $this->course->test_questions > 0 ? $this->course->test_questions : 10;
     }
 
     public function loadQuestionsFromIds()
@@ -277,6 +302,6 @@ class TestPlayer extends Component
 
         return view('livewire.student.test-player', [
             'currentQuestion' => $this->questions[$this->currentQuestionIndex] ?? null
-        ])->layout('layouts.app');
+        ])->layout('layouts.fullscreen');
     }
 }

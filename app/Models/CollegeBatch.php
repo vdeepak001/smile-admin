@@ -13,6 +13,7 @@ class CollegeBatch extends Model
         'start_date',
         'end_date',
         'batch_type',
+        'final_test_questions_count',
         'active_status',
         'created_by',
         'updated_by',

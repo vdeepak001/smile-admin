@@ -30,24 +30,34 @@
                         <span class="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-full">Done</span>
                     </div>
                     <div class="p-4 flex-grow flex flex-col justify-between">
-                         <div class="text-center mb-4">
-                            <div class="text-2xl font-bold text-yellow-600">{{ $preTestMark->percentage }}%</div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
-                            <div class="p-1.5 bg-green-50 rounded">
-                                <span class="block font-bold text-green-600">{{ $preTestMark->correct_answer }}</span>
-                                <span class="text-gray-500 uppercase">Correct</span>
+                        @if($preTestMark->completed_at && $preTestMark->completed_at->diffInHours(now()) < 1)
+                            <div class="block w-full text-center px-4 py-8 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-gray-500 font-medium">Result will be generated after 1 hour</p>
                             </div>
-                            <div class="p-1.5 bg-red-50 rounded">
-                                <span class="block font-bold text-red-600">{{ $preTestMark->wrong_answer }}</span>
-                                <span class="text-gray-500 uppercase">Wrong</span>
+                            <div class="block w-full text-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest cursor-not-allowed">
+                                Report will generate within 1 hour
                             </div>
-                        </div>
-                        <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'pre']) }}" 
-                           class="block w-full text-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-yellow-500 transition-colors">
-                            View Details
-                        </a>
+                        @else
+                            <div class="text-center mb-4">
+                                <div class="text-2xl font-bold text-yellow-600">{{ $preTestMark->percentage }}%</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
+                                <div class="p-1.5 bg-green-50 rounded">
+                                    <span class="block font-bold text-green-600">{{ $preTestMark->correct_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Correct</span>
+                                </div>
+                                <div class="p-1.5 bg-red-50 rounded">
+                                    <span class="block font-bold text-red-600">{{ $preTestMark->wrong_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Wrong</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'pre']) }}" 
+                               class="block w-full text-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-yellow-500 transition-colors">
+                                View Details
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -69,24 +79,34 @@
                             <span class="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-full">Done</span>
                         </div>
                         <div class="p-4 flex-grow flex flex-col justify-between">
-                             <div class="text-center mb-4">
-                                <div class="text-2xl font-bold text-blue-600">{{ $topicData['mark']->percentage }}%</div>
-                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
-                                <div class="p-1.5 bg-green-50 rounded">
-                                    <span class="block font-bold text-green-600">{{ $topicData['mark']->correct_answer }}</span>
-                                    <span class="text-gray-500 uppercase">Correct</span>
+                            @if($topicData['mark']->completed_at && $topicData['mark']->completed_at->diffInHours(now()) < 1)
+                                <div class="block w-full text-center px-4 py-8 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <p class="text-sm text-gray-500 font-medium">Result will be generated after 1 hour</p>
                                 </div>
-                                <div class="p-1.5 bg-red-50 rounded">
-                                    <span class="block font-bold text-red-600">{{ $topicData['mark']->wrong_answer }}</span>
-                                    <span class="text-gray-500 uppercase">Wrong</span>
+                                <div class="block w-full text-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest cursor-not-allowed">
+                                    Report will generate within 1 hour
                                 </div>
-                            </div>
-                            <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'topic', 'topic_id' => $topicData['topic']->topic_id]) }}" 
-                               class="block w-full text-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-blue-500 transition-colors">
-                                View Details
-                            </a>
+                            @else
+                                <div class="text-center mb-4">
+                                    <div class="text-2xl font-bold text-blue-600">{{ $topicData['mark']->percentage }}%</div>
+                                    <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
+                                    <div class="p-1.5 bg-green-50 rounded">
+                                        <span class="block font-bold text-green-600">{{ $topicData['mark']->correct_answer }}</span>
+                                        <span class="text-gray-500 uppercase">Correct</span>
+                                    </div>
+                                    <div class="p-1.5 bg-red-50 rounded">
+                                        <span class="block font-bold text-red-600">{{ $topicData['mark']->wrong_answer }}</span>
+                                        <span class="text-gray-500 uppercase">Wrong</span>
+                                    </div>
+                                </div>
+                                <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'topic', 'topic_id' => $topicData['topic']->topic_id]) }}" 
+                                   class="block w-full text-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-blue-500 transition-colors">
+                                    View Details
+                                </a>
+                            @endif
                         </div>
                     </div>
                 @endforeach
@@ -105,24 +125,34 @@
                         <span class="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-full">Done</span>
                     </div>
                     <div class="p-4 flex-grow flex flex-col justify-between">
-                         <div class="text-center mb-4">
-                            <div class="text-2xl font-bold text-blue-600">{{ $practiceTestMark->percentage }}%</div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
-                            <div class="p-1.5 bg-green-50 rounded">
-                                <span class="block font-bold text-green-600">{{ $practiceTestMark->correct_answer }}</span>
-                                <span class="text-gray-500 uppercase">Correct</span>
+                        @if($practiceTestMark->completed_at && $practiceTestMark->completed_at->diffInHours(now()) < 1)
+                            <div class="block w-full text-center px-4 py-8 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-gray-500 font-medium">Result will be generated after 1 hour</p>
                             </div>
-                            <div class="p-1.5 bg-red-50 rounded">
-                                <span class="block font-bold text-red-600">{{ $practiceTestMark->wrong_answer }}</span>
-                                <span class="text-gray-500 uppercase">Wrong</span>
+                            <div class="block w-full text-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest cursor-not-allowed">
+                                Report will generate within 1 hour
                             </div>
-                        </div>
-                        <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'practice']) }}" 
-                           class="block w-full text-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-blue-500 transition-colors">
-                            View Details
-                        </a>
+                        @else
+                            <div class="text-center mb-4">
+                                <div class="text-2xl font-bold text-blue-600">{{ $practiceTestMark->percentage }}%</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
+                                <div class="p-1.5 bg-green-50 rounded">
+                                    <span class="block font-bold text-green-600">{{ $practiceTestMark->correct_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Correct</span>
+                                </div>
+                                <div class="p-1.5 bg-red-50 rounded">
+                                    <span class="block font-bold text-red-600">{{ $practiceTestMark->wrong_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Wrong</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'practice']) }}" 
+                               class="block w-full text-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-blue-500 transition-colors">
+                                View Details
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -140,24 +170,34 @@
                         <span class="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-full">Done</span>
                     </div>
                     <div class="p-4 flex-grow flex flex-col justify-between">
-                         <div class="text-center mb-4">
-                            <div class="text-2xl font-bold text-indigo-600">{{ $mock1TestMark->percentage }}%</div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
-                            <div class="p-1.5 bg-green-50 rounded">
-                                <span class="block font-bold text-green-600">{{ $mock1TestMark->correct_answer }}</span>
-                                <span class="text-gray-500 uppercase">Correct</span>
+                        @if($mock1TestMark->completed_at && $mock1TestMark->completed_at->diffInHours(now()) < 1)
+                            <div class="block w-full text-center px-4 py-8 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-gray-500 font-medium">Result will be generated after 1 hour</p>
                             </div>
-                            <div class="p-1.5 bg-red-50 rounded">
-                                <span class="block font-bold text-red-600">{{ $mock1TestMark->wrong_answer }}</span>
-                                <span class="text-gray-500 uppercase">Wrong</span>
+                            <div class="block w-full text-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest cursor-not-allowed">
+                                Report will generate within 1 hour
                             </div>
-                        </div>
-                        <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'mock1']) }}" 
-                           class="block w-full text-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-indigo-500 transition-colors">
-                            View Details
-                        </a>
+                        @else
+                            <div class="text-center mb-4">
+                                <div class="text-2xl font-bold text-indigo-600">{{ $mock1TestMark->percentage }}%</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
+                                <div class="p-1.5 bg-green-50 rounded">
+                                    <span class="block font-bold text-green-600">{{ $mock1TestMark->correct_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Correct</span>
+                                </div>
+                                <div class="p-1.5 bg-red-50 rounded">
+                                    <span class="block font-bold text-red-600">{{ $mock1TestMark->wrong_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Wrong</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'mock1']) }}" 
+                               class="block w-full text-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-indigo-500 transition-colors">
+                                View Details
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -175,24 +215,34 @@
                         <span class="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-full">Done</span>
                     </div>
                     <div class="p-4 flex-grow flex flex-col justify-between">
-                         <div class="text-center mb-4">
-                            <div class="text-2xl font-bold text-pink-600">{{ $mock2TestMark->percentage }}%</div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
-                            <div class="p-1.5 bg-green-50 rounded">
-                                <span class="block font-bold text-green-600">{{ $mock2TestMark->correct_answer }}</span>
-                                <span class="text-gray-500 uppercase">Correct</span>
+                        @if($mock2TestMark->completed_at && $mock2TestMark->completed_at->diffInHours(now()) < 1)
+                            <div class="block w-full text-center px-4 py-8 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-gray-500 font-medium">Result will be generated after 1 hour</p>
                             </div>
-                            <div class="p-1.5 bg-red-50 rounded">
-                                <span class="block font-bold text-red-600">{{ $mock2TestMark->wrong_answer }}</span>
-                                <span class="text-gray-500 uppercase">Wrong</span>
+                            <div class="block w-full text-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest cursor-not-allowed">
+                                Report will generate within 1 hour
                             </div>
-                        </div>
-                        <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'mock2']) }}" 
-                           class="block w-full text-center px-4 py-2 bg-pink-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-pink-500 transition-colors">
-                            View Details
-                        </a>
+                        @else
+                            <div class="text-center mb-4">
+                                <div class="text-2xl font-bold text-pink-600">{{ $mock2TestMark->percentage }}%</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Score</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
+                                <div class="p-1.5 bg-green-50 rounded">
+                                    <span class="block font-bold text-green-600">{{ $mock2TestMark->correct_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Correct</span>
+                                </div>
+                                <div class="p-1.5 bg-red-50 rounded">
+                                    <span class="block font-bold text-red-600">{{ $mock2TestMark->wrong_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Wrong</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'mock2']) }}" 
+                               class="block w-full text-center px-4 py-2 bg-pink-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-pink-500 transition-colors">
+                                View Details
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif
@@ -210,24 +260,34 @@
                         <span class="px-1.5 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded-full">Done</span>
                     </div>
                     <div class="p-4 flex-grow flex flex-col justify-between">
-                         <div class="text-center mb-4">
-                            <div class="text-2xl font-bold text-purple-600">{{ $finalTestMark->percentage }}%</div>
-                            <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Final Score</div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
-                            <div class="p-1.5 bg-green-50 rounded">
-                                <span class="block font-bold text-green-600">{{ $finalTestMark->correct_answer }}</span>
-                                <span class="text-gray-500 uppercase">Correct</span>
+                        @if($finalTestMark->completed_at && $finalTestMark->completed_at->diffInHours(now()) < 1)
+                            <div class="block w-full text-center px-4 py-8 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-sm text-gray-500 font-medium">Result will be generated after 1 hour</p>
                             </div>
-                            <div class="p-1.5 bg-red-50 rounded">
-                                <span class="block font-bold text-red-600">{{ $finalTestMark->wrong_answer }}</span>
-                                <span class="text-gray-500 uppercase">Wrong</span>
+                            <div class="block w-full text-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest cursor-not-allowed">
+                                Report will generate within 1 hour
                             </div>
-                        </div>
-                        <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'final']) }}" 
-                           class="block w-full text-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-purple-500 transition-colors">
-                            View Details
-                        </a>
+                        @else
+                            <div class="text-center mb-4">
+                                <div class="text-2xl font-bold text-purple-600">{{ $finalTestMark->percentage }}%</div>
+                                <div class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Final Score</div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-center text-[10px] mb-4">
+                                <div class="p-1.5 bg-green-50 rounded">
+                                    <span class="block font-bold text-green-600">{{ $finalTestMark->correct_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Correct</span>
+                                </div>
+                                <div class="p-1.5 bg-red-50 rounded">
+                                    <span class="block font-bold text-red-600">{{ $finalTestMark->wrong_answer }}</span>
+                                    <span class="text-gray-500 uppercase">Wrong</span>
+                                </div>
+                            </div>
+                            <a href="{{ route('student.test-report', ['course' => $course->course_id, 'test_type' => 'final']) }}" 
+                               class="block w-full text-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-[10px] text-white uppercase tracking-widest hover:bg-purple-500 transition-colors">
+                                View Details
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif

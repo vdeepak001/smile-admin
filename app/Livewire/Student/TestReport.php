@@ -18,6 +18,8 @@ class TestReport extends Component
     public $answeredQuestions = [];
     public $questionsToShow = 10; // Number of questions to display
     public $currentPage = 1;
+    public $reportAvailable = false;
+    public $timeUntilAvailable = null;
 
     public function mount($course, $test_type, $topic_id = null)
     {
@@ -56,19 +58,46 @@ class TestReport extends Component
             abort(404, 'Test report not found');
         }
 
-        // Load answered questions with question details
-        $answeredQuery = Answered::where('user_id', $studentId)
-            ->where('course_id', $courseId)
-            ->where('test_type', $this->testType)
-            ->with('question');
+        // Check if report is available (1 hour after completion)
+        $this->checkReportAvailability();
 
-        if ($this->topicId) {
-            $answeredQuery->where('topic_id', $this->topicId);
+        if ($this->reportAvailable) {
+            // Load answered questions with question details
+            $answeredQuery = Answered::where('user_id', $studentId)
+                ->where('course_id', $courseId)
+                ->where('test_type', $this->testType)
+                ->with('question');
+
+            if ($this->topicId) {
+                $answeredQuery->where('topic_id', $this->topicId);
+            }
+
+            $this->answeredQuestions = $answeredQuery
+                ->orderBy('sequence')
+                ->get();
+        }
+    }
+
+    public function checkReportAvailability()
+    {
+        if (!$this->mark || !$this->mark->completed_at) {
+            $this->reportAvailable = false;
+            return;
         }
 
-        $this->answeredQuestions = $answeredQuery
-            ->orderBy('sequence')
-            ->get();
+        $completedAt = $this->mark->completed_at;
+        $now = now();
+        $hoursSinceCompletion = $completedAt->diffInHours($now);
+        
+        // Report available after 1 hour
+        if ($hoursSinceCompletion >= 1) {
+            $this->reportAvailable = true;
+            $this->timeUntilAvailable = null;
+        } else {
+            $this->reportAvailable = false;
+            $minutesRemaining = 60 - $completedAt->diffInMinutes($now);
+            $this->timeUntilAvailable = $minutesRemaining;
+        }
     }
 
     public function loadMore()

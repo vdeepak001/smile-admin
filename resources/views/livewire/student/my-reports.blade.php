@@ -27,26 +27,34 @@
                             {{ $course->course_code }}
                         </p>
 
-                        <!-- Statistics -->
-                        <div class="grid grid-cols-3 gap-2 mb-4">
-                            <div class="text-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                                <div class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ $course->total_tests }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Tests</div>
+                        @if(!($course->latest_completion_at && $course->latest_completion_at->diffInHours(now()) < 1))
+                            <!-- Statistics -->
+                            <div class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="text-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                                    <div class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ $course->total_tests }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Tests</div>
+                                </div>
+                                <div class="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                                    <div class="text-lg font-bold text-green-600">{{ $course->average_score }}%</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Avg</div>
+                                </div>
+                                <div class="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                                    <div class="text-lg font-bold text-blue-600">{{ $course->highest_score }}%</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Best</div>
+                                </div>
                             </div>
-                            <div class="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                                <div class="text-lg font-bold text-green-600">{{ $course->average_score }}%</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Avg</div>
-                            </div>
-                            <div class="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
-                                <div class="text-lg font-bold text-blue-600">{{ $course->highest_score }}%</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">Best</div>
-                            </div>
-                        </div>
+                        @endif
 
-                        <a href="{{ route('student.course-report', $course->course_id) }}" 
-                           class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
-                            {{ __('View Report') }}
-                        </a>
+                        @if($course->latest_completion_at && $course->latest_completion_at->diffInHours(now()) < 1)
+                             <div class="inline-flex items-center px-4 py-2 bg-gray-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest cursor-not-allowed">
+                                {{ __('You can see result after 1 hour') }}
+                            </div>
+                        @else
+                            <a href="{{ route('student.course-report', $course->course_id) }}" 
+                               class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                {{ __('View Report') }}
+                            </a>
+                        @endif
                     </div>
                 </div>
             @empty

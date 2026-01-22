@@ -42,8 +42,35 @@
             </div>
         </div>
 
-        <!-- Questions Review -->
-        <div class="space-y-6">
+        @if(!$reportAvailable)
+            <!-- Report Not Available Yet -->
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-6 rounded-lg">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-8 w-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-medium text-yellow-800 dark:text-yellow-200">
+                            Report Not Available Yet
+                        </h3>
+                        <p class="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                            Test reports are available 1 hour after test completion.
+                            @if($timeUntilAvailable)
+                                <br>
+                                <strong>Time remaining: {{ $timeUntilAvailable }} minutes</strong>
+                            @endif
+                        </p>
+                        <p class="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+                            Completed at: {{ $mark->completed_at->format('M d, Y h:i A') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @else
+            <!-- Questions Review -->
+            <div class="space-y-6">
             @foreach($this->visibleQuestions as $index => $answered)
                 @php
                     $question = $answered->question;
@@ -162,6 +189,7 @@
                     Load More Questions ({{ $answeredQuestions->count() - $questionsToShow }} remaining)
                 </button>
             </div>
+        @endif
         @endif
     </div>
 </div>

@@ -13,6 +13,12 @@ class CourseView extends Component
     public $preTestEnabled = false;
     public $topicsEnabled = false;
     public $finalTestEnabled = false;
+    
+    // Batch type properties
+    public $batchType = 3; // Default to Type 3 (all tests)
+    public $showPreTest = true;
+    public $showTopicTests = true;
+    public $showFinalTest = true;
 
     public function mount(\App\Models\Course $course)
     {
@@ -20,7 +26,64 @@ class CourseView extends Component
             abort(404);
         }
         $this->course = $course;
+        $this->determineBatchType();
         $this->loadProgress();
+    }
+
+    protected function determineBatchType()
+    {
+        $user = auth()->user();
+        
+        // Get student record
+        $student = $user->student;
+        
+        if (!$student) {
+            // Not a student, default to Type 3 (show all tests)
+            $this->batchType = 3;
+            $this->setTestVisibility();
+            return;
+        }
+        
+        // Find batch that includes this course
+        $batch = $student->batches()
+            ->where('active_status', true)
+            ->get()
+            ->first(function ($batch) {
+                return in_array($this->course->course_id, $batch->courses ?? []);
+            });
+        
+        if ($batch) {
+            $this->batchType = (int) $batch->batch_type;
+        } else {
+            // No batch assigned, default to Type 3 (show all tests)
+            $this->batchType = 3;
+        }
+        
+        $this->setTestVisibility();
+    }
+
+    protected function setTestVisibility()
+    {
+        switch ($this->batchType) {
+            case 1: // Type 1: Only Final Test
+                $this->showPreTest = false;
+                $this->showTopicTests = false;
+                $this->showFinalTest = true;
+                break;
+            
+            case 2: // Type 2: Topic-wise Test & Final Test
+                $this->showPreTest = false;
+                $this->showTopicTests = true;
+                $this->showFinalTest = true;
+                break;
+            
+            case 3: // Type 3: Pre-Test, Topic-wise Test & Final Test
+            default:
+                $this->showPreTest = true;
+                $this->showTopicTests = true;
+                $this->showFinalTest = true;
+                break;
+        }
     }
 
     public function loadProgress()
@@ -60,20 +123,34 @@ class CourseView extends Component
             ->first();
 
 
-        // Logic for Enabling
-        $this->preTestEnabled = true; // Always open unless completed? Or stays open to view score?
-        
+        // Logic for Enabling based on batch type
         $preTestDone = $this->preTestMark != null;
         
-        // Topics enabled only if Pre-Test done (or if Pre-Test not applicable - but we assume applicable for now based on flow)
-        $this->topicsEnabled = $preTestDone;
-
-        // Final Test enabled only if all topics completed
+        // All topics completed
         $allTopicsCompleted = $this->topics->every(function ($topic) {
             return $topic->mark != null;
         });
-
-        $this->finalTestEnabled = $preTestDone && $allTopicsCompleted;
+        
+        switch ($this->batchType) {
+            case 1: // Type 1: Only Final Test - available immediately
+                $this->preTestEnabled = false;
+                $this->topicsEnabled = false;
+                $this->finalTestEnabled = true;
+                break;
+            
+            case 2: // Type 2: Topic-wise Test & Final Test
+                $this->preTestEnabled = false;
+                $this->topicsEnabled = true; // Topics always enabled
+                $this->finalTestEnabled = $allTopicsCompleted; // Final enabled after all topics
+                break;
+            
+            case 3: // Type 3: Pre-Test, Topic-wise Test & Final Test (sequential)
+            default:
+                $this->preTestEnabled = true; // Pre-test always available
+                $this->topicsEnabled = $preTestDone; // Topics unlock after pre-test
+                $this->finalTestEnabled = $preTestDone && $allTopicsCompleted; // Final after all
+                break;
+        }
     }
 
     public function render()

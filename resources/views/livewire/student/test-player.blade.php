@@ -1,5 +1,5 @@
-<div class="py-12">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+<div class="min-h-screen">
+    <div class="w-full px-4 sm:px-6 lg:px-8 py-8">
         
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6" @if(!$isFinished) wire:poll.1s="calculateTimeRemaining" @endif>
@@ -49,7 +49,7 @@
                                 <img src="{{ asset('storage/' . $currentQuestion->pic_1) }}" class="mb-6 max-h-64 rounded-lg shadow-md mx-auto">
                             @endif
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 gap-4">
                                 @foreach([1, 2, 3, 4] as $option)
                                     @php 
                                         $choiceKey = 'choice_' . $option;
