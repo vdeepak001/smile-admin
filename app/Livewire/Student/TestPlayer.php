@@ -8,10 +8,10 @@ class TestPlayer extends Component
 {
     public $testType;
     public $contextId; // course_id or topic_id
-    public $course;
-    public $topic;
+    public \App\Models\Course $course;
+    public ?\App\Models\CourseTopic $topic = null;
     
-    public $questions = [];
+    protected $questions = null;
     public $currentQuestionIndex = 0;
     public $answers = []; // [question_id => selected_choice]
     public $isFinished = false;
@@ -19,18 +19,60 @@ class TestPlayer extends Component
     public $totalQuestionsCount = 0;
     public $correctAnswersCount = 0;
     public $wrongAnswersCount = 0;
-    public $currentQuestionStartTime;
-    public $selectedOption = null;
-    public $optionStatus = null; // 'correct' or 'wrong'
     public $questionIds = [];
+    
+    // Timer properties
+    public $testStartTime;
+    public $testDuration; // in minutes
+    public $timeRemaining; // in seconds
 
     public function mount($test_type, $context_id)
     {
         $this->testType = $test_type;
         $this->contextId = $context_id;
 
-        $this->currentQuestionStartTime = now();
         $this->loadQuestions();
+        $this->initializeTimer();
+    }
+
+    public function initializeTimer()
+    {
+        // Set test duration based on test type
+        // Default durations (in minutes)
+        $durations = [
+            'pre' => 15,
+            'topic' => 10,
+            'practice' => 30,
+            'mock1' => 45,
+            'mock2' => 45,
+            'final' => 60,
+        ];
+
+        $this->testDuration = $durations[$this->testType] ?? 30;
+        // Store as timestamp string to persist across Livewire requests
+        $this->testStartTime = now()->toDateTimeString();
+        $this->calculateTimeRemaining();
+    }
+
+    public function calculateTimeRemaining()
+    {
+        if ($this->isFinished) {
+            $this->timeRemaining = 0;
+            return;
+        }
+
+        // Calculate elapsed time using timestamps
+        $startTimestamp = strtotime($this->testStartTime);
+        $currentTimestamp = time();
+        $elapsedSeconds = $currentTimestamp - $startTimestamp;
+        
+        $totalSeconds = $this->testDuration * 60;
+        $this->timeRemaining = max(0, $totalSeconds - $elapsedSeconds);
+
+        // Auto-submit if time is up
+        if ($this->timeRemaining <= 0) {
+            $this->submitTest();
+        }
     }
 
     public function loadQuestions()
@@ -102,62 +144,89 @@ class TestPlayer extends Component
         $this->totalQuestionsCount = $this->questions->count();
     }
 
-    public function submitAnswer($questionId, $option)
+    public function selectAnswer($questionId, $option)
     {
-        if ($this->selectedOption !== null) {
-            return;
-        }
-
-        $timeTaken = now()->diffInSeconds($this->currentQuestionStartTime);
-        $this->currentQuestionStartTime = now();
+        // Just store the selected answer without validation
         $this->answers[$questionId] = $option;
-        
-        // Save to DB immediately as requested
-        $question = $this->questions->find($questionId);
-        $isCorrect = $question->right_answer == $option;
+    }
 
-        $this->selectedOption = $option;
-        $this->optionStatus = $isCorrect ? 'correct' : 'incorrect';
-
-        \App\Models\Answered::create([
-            'user_id' => auth()->id(),
-            'course_id' => $this->course->course_id,
-            'topic_id' => $question->topic_id,
-            'question_id' => $questionId,
-            'test_type' => $this->testType,
-            'sequence' => $this->currentQuestionIndex + 1,
-            'answered_choice' => (string)$option,
-            'answered_status' => $this->optionStatus,
-            'time_taken' => max(0, $timeTaken), 
-            'answered_date' => now(),
-        ]);
-
-        $this->dispatch('answer-submitted');
+    public function previousQuestion()
+    {
+        if ($this->currentQuestionIndex > 0) {
+            $this->currentQuestionIndex--;
+        }
     }
 
     public function nextQuestion()
     {
-        $this->selectedOption = null;
-        $this->optionStatus = null;
-
         if ($this->currentQuestionIndex < $this->totalQuestionsCount - 1) {
             $this->currentQuestionIndex++;
-        } else {
-            $this->finishTest();
         }
+    }
+
+    public function submitTest()
+    {
+        $this->finishTest();
     }
 
     public function finishTest()
     {
+        // Ensure questions are loaded before scoring and saving
+        if (empty($this->questions)) {
+            $this->loadQuestionsFromIds();
+        }
+
         $this->isFinished = true;
         $this->calculateScore();
         $this->saveMarks();
+        $this->saveAnsweredQuestions();
+    }
+
+    public function saveAnsweredQuestions()
+    {
+        try {
+            // Delete previous attempts for this test to avoid duplicates
+            \App\Models\Answered::where('user_id', auth()->id())
+                ->where('course_id', $this->course->course_id)
+                ->where('test_type', $this->testType)
+                ->when($this->testType === 'topic', function($query) {
+                    return $query->where('topic_id', $this->topic->topic_id);
+                })
+                ->delete();
+
+            // Save all answered questions to the database
+            foreach ($this->answers as $questionId => $option) {
+                $question = \App\Models\Question::find($questionId);
+                if (!$question) continue;
+                
+                $isCorrect = $question->right_answer == $option;
+                $sequence = array_search($questionId, $this->questionIds) + 1;
+
+                \App\Models\Answered::create([
+                    'user_id' => auth()->id(),
+                    'course_id' => $this->course->course_id,
+                    'topic_id' => $question->topic_id,
+                    'question_id' => $questionId,
+                    'test_type' => $this->testType,
+                    'sequence' => $sequence,
+                    'answered_choice' => (string)$option,
+                    'answered_status' => $isCorrect ? 'correct' : 'incorrect',
+                    'time_taken' => 0,
+                    'answered_date' => now(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error saving answered questions: ' . $e->getMessage());
+            // Continue anyway to show completion screen
+        }
     }
 
     public function calculateScore()
     {
         $this->correctAnswersCount = 0;
-        foreach ($this->questions as $question) {
+        $allQuestions = \App\Models\Question::whereIn('question_id', $this->questionIds)->get();
+        
+        foreach ($allQuestions as $question) {
             if (isset($this->answers[$question->question_id])) {
                 if ($this->answers[$question->question_id] == $question->right_answer) {
                     $this->correctAnswersCount++;

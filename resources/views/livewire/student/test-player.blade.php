@@ -2,9 +2,28 @@
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6">
+            <div class="p-6" @if(!$isFinished) wire:poll.1s="calculateTimeRemaining" @endif>
                 
                 @if(!$isFinished)
+                    <!-- Timer Display -->
+                    <div class="mb-4 text-center">
+                        @php
+                            $minutes = floor($timeRemaining / 60);
+                            $seconds = $timeRemaining % 60;
+                            $timerColor = $timeRemaining > 300 ? 'text-green-600' : ($timeRemaining > 60 ? 'text-yellow-600' : 'text-red-600');
+                            $bgColor = $timeRemaining > 300 ? 'bg-green-50 border-green-200' : ($timeRemaining > 60 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200');
+                        @endphp
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 {{ $bgColor }}">
+                            <svg class="w-5 h-5 {{ $timerColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="font-bold text-lg {{ $timerColor }}">
+                                {{ sprintf('%02d:%02d', $minutes, $seconds) }}
+                            </span>
+                            <span class="text-sm text-gray-600">remaining</span>
+                        </div>
+                    </div>
+
                     <!-- Progress Bar -->
                     <div class="mb-6 text-center">
                         <div class="flex justify-between text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
@@ -36,79 +55,63 @@
                                         $choiceKey = 'choice_' . $option;
                                         $choiceText = $currentQuestion->$choiceKey;
                                         
-                                        $isThisSelected = (int)$selectedOption === (int)$option;
-                                        $bgClass = 'bg-white dark:bg-gray-800';
-                                        $borderClass = 'border-gray-200 dark:border-gray-700';
-                                        $iconClass = 'bg-gray-100 text-gray-500';
+                                        // Check if this option is selected for the current question
+                                        $isSelected = isset($answers[$currentQuestion->question_id]) && 
+                                                      (int)$answers[$currentQuestion->question_id] === (int)$option;
                                         
-                                        if ($selectedOption) {
-                                            if ($isThisSelected) {
-                                                if ($optionStatus === 'correct') {
-                                                    $bgClass = 'bg-green-50 dark:bg-green-900/20';
-                                                    $borderClass = 'border-green-500';
-                                                    $iconClass = 'bg-green-500 text-white';
-                                                } else {
-                                                    $bgClass = 'bg-red-50 dark:bg-red-900/20';
-                                                    $borderClass = 'border-red-500';
-                                                    $iconClass = 'bg-red-500 text-white';
-                                                }
-                                            } elseif ((int)$option === (int)$currentQuestion->right_answer) {
-                                                // Highlight correct answer even if not selected
-                                                $bgClass = 'bg-green-50 dark:bg-green-900/10';
-                                                $borderClass = 'border-green-300';
-                                                $iconClass = 'bg-green-300 text-white';
-                                            } else {
-                                                $bgClass = 'bg-gray-50 dark:bg-gray-800 opacity-50';
-                                            }
-                                        }
+                                        $bgClass = $isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-white dark:bg-gray-800';
+                                        $borderClass = $isSelected ? 'border-blue-500' : 'border-gray-200 dark:border-gray-700';
+                                        $iconClass = $isSelected ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500';
                                     @endphp
                                     @if($choiceText)
                                         <button 
                                             wire:key="option-{{ $currentQuestion->question_id }}-{{ $option }}"
-                                            wire:click="submitAnswer({{ $currentQuestion->question_id }}, {{ $option }})" 
-                                            @if($selectedOption) disabled @endif
+                                            wire:click="selectAnswer({{ $currentQuestion->question_id }}, {{ $option }})" 
                                             wire:loading.attr="disabled"
-                                            class="p-4 text-left border-2 {{ $borderClass }} {{ $bgClass }} rounded-xl transition-all duration-200 flex items-center group
-                                                   @if(!$selectedOption) hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer @else cursor-default @endif">
+                                            class="p-4 text-left border-2 {{ $borderClass }} {{ $bgClass }} rounded-xl transition-all duration-200 flex items-center group hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-700 cursor-pointer">
                                             <span class="w-10 h-10 flex items-center justify-center rounded-full font-bold mr-4 shrink-0 {{ $iconClass }}">
                                                 {{ chr(64 + $option) }}
                                             </span>
                                             <span class="text-gray-700 dark:text-gray-300 font-medium text-lg">{{ $choiceText }}</span>
-                                            
-                                            <div wire:loading wire:target="submitAnswer({{ $currentQuestion->question_id }}, {{ $option }})" class="ml-auto">
-                                                <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                            </div>
                                         </button>
                                     @endif
                                 @endforeach
                             </div>
 
-                            @if($selectedOption)
-                                <div class="mt-8 flex justify-center">
-                                    <button wire:click="nextQuestion" class="px-8 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">
-                                        Next Question
+                            <!-- Navigation Buttons -->
+                            <div class="mt-8 flex justify-between items-center gap-4">
+                                <!-- Previous Button -->
+                                <button 
+                                    wire:click="previousQuestion" 
+                                    @if($currentQuestionIndex === 0) disabled @endif
+                                    class="px-6 py-3 bg-gray-500 text-white rounded-lg font-bold hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                    ← Previous
+                                </button>
+
+                                <!-- Next or Submit Button -->
+                                @if($currentQuestionIndex < $totalQuestionsCount - 1)
+                                    <button 
+                                        wire:click="nextQuestion" 
+                                        class="px-6 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">
+                                        Next →
                                     </button>
-                                </div>
-                            @endif
+                                @else
+                                    <button 
+                                        wire:click="submitTest" 
+                                        wire:loading.attr="disabled"
+                                        wire:loading.class="opacity-50 cursor-not-allowed"
+                                        class="px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition">
+                                        <span wire:loading.remove wire:target="submitTest">Submit Test</span>
+                                        <span wire:loading wire:target="submitTest">Submitting...</span>
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     @else
                        <div class="text-center py-10">
                            <p>Loading Question...</p>
                        </div>
                     @endif
-
-                    <script>
-                        document.addEventListener('livewire:init', () => {
-                           Livewire.on('answer-submitted', (event) => {
-                               setTimeout(() => {
-                                   @this.nextQuestion();
-                               }, 2000);
-                           });
-                        });
-                    </script>
                 @else
                     <!-- Results Screen -->
                     <div class="text-center py-10">
@@ -116,23 +119,10 @@
                             <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         
-                        <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Test Completed!</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mb-8">You have successfully completed the {{ $testType }} test.</p>
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">Test Completed!</h2>
                         
-                        <div class="max-w-md mx-auto bg-gray-50 dark:bg-gray-700 rounded-xl p-6 mb-8">
-                             <div class="text-4xl font-bold text-blue-600 mb-2">{{ $score }}%</div>
-                             <div class="text-sm text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wide">Final Score</div>
-                             
-                             <div class="grid grid-cols-2 gap-4 border-t border-gray-200 dark:border-gray-600 pt-6">
-                                 <div>
-                                     <span class="block text-2xl font-bold text-green-600">{{ $correctAnswersCount }}</span>
-                                     <span class="text-xs text-gray-500">Correct</span>
-                                 </div>
-                                 <div class="border-l border-gray-200 dark:border-gray-600">
-                                     <span class="block text-2xl font-bold text-red-600">{{ $wrongAnswersCount }}</span>
-                                     <span class="text-xs text-gray-500">Wrong</span>
-                                 </div>
-                             </div>
+                        <div class="mb-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <p class="text-gray-600 dark:text-gray-400 mb-2">You have successfully completed the {{ $testType }} test.</p>
                         </div>
 
                         <a href="{{ route('student.course.show', $course->course_id) }}" 

@@ -16,7 +16,8 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
+    {{-- @vite(['resources/js/app.js']) --}}
     <!-- Tailwind fallback so layout/cards/sidebar keep styling even if Vite hasn't built -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.4/dist/tailwind.min.css">
 

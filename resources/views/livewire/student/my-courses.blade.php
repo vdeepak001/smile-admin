@@ -30,13 +30,6 @@
                                     {{ $course->description }}
                                 </p>
 
-                                @if($preTestMark)
-                                    <div class="mb-4 bg-green-50 dark:bg-green-900/20 p-2 rounded-md border border-green-100 dark:border-green-800">
-                                        <p class="text-sm text-green-700 dark:text-green-400 font-medium">
-                                            Pre-Test Score: {{ $preTestMark->percentage }}%
-                                        </p>
-                                    </div>
-                                @endif
 
                                 <a href="{{ route('student.course.show', $course->course_id) }}" 
                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
