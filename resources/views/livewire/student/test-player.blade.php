@@ -2,26 +2,46 @@
     <div class="w-full px-4 sm:px-6 lg:px-8 py-8">
         
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6" @if(!$isFinished) wire:poll.1s="calculateTimeRemaining" @endif>
+            <div class="p-6" @if(!$isFinished) wire:poll.1s="@if($testType === 'topic')updateCurrentQuestionTime @else calculateTimeRemaining @endif" @endif>
                 
                 @if(!$isFinished)
                     <!-- Timer Display -->
                     <div class="mb-4 text-center">
-                        @php
-                            $minutes = floor($timeRemaining / 60);
-                            $seconds = $timeRemaining % 60;
-                            $timerColor = $timeRemaining > 300 ? 'text-green-600' : ($timeRemaining > 60 ? 'text-yellow-600' : 'text-red-600');
-                            $bgColor = $timeRemaining > 300 ? 'bg-green-50 border-green-200' : ($timeRemaining > 60 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200');
-                        @endphp
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 {{ $bgColor }}">
-                            <svg class="w-5 h-5 {{ $timerColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span class="font-bold text-lg {{ $timerColor }}">
-                                {{ sprintf('%02d:%02d', $minutes, $seconds) }}
-                            </span>
-                            <span class="text-sm text-gray-600">remaining</span>
-                        </div>
+                        @if(in_array($testType, ['pre', 'final']))
+                            {{-- Overall countdown timer for pre and final tests --}}
+                            @php
+                                $minutes = floor($timeRemaining / 60);
+                                $seconds = $timeRemaining % 60;
+                                $timerColor = $timeRemaining > 300 ? 'text-green-600' : ($timeRemaining > 60 ? 'text-yellow-600' : 'text-red-600');
+                                $bgColor = $timeRemaining > 300 ? 'bg-green-50 border-green-200' : ($timeRemaining > 60 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200');
+                            @endphp
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 {{ $bgColor }}">
+                                <svg class="w-5 h-5 {{ $timerColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="font-bold text-lg {{ $timerColor }}">
+                                    {{ sprintf('%02d:%02d', $minutes, $seconds) }}
+                                </span>
+                                <span class="text-sm text-gray-600">remaining</span>
+                            </div>
+                        @else
+                            {{-- Per-question count-up timer for topic tests --}}
+                            @php
+                                $minutes = floor($currentQuestionTime / 60);
+                                $seconds = $currentQuestionTime % 60;
+                                $timerColor = $currentQuestionTime < 30 ? 'text-green-600' : ($currentQuestionTime < 60 ? 'text-yellow-600' : 'text-orange-600');
+                                $bgColor = $currentQuestionTime < 30 ? 'bg-green-50 border-green-200' : ($currentQuestionTime < 60 ? 'bg-yellow-50 border-yellow-200' : 'bg-orange-50 border-orange-200');
+                            @endphp
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 {{ $bgColor }}">
+                                <svg class="w-5 h-5 {{ $timerColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span class="font-bold text-lg {{ $timerColor }}">
+                                    {{ sprintf('%02d:%02d', $minutes, $seconds) }}
+                                </span>
+                                <span class="text-sm text-gray-600">on this question</span>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Progress Bar -->
