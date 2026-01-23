@@ -17,6 +17,8 @@ class Marks extends Model
     protected $fillable = [
         'student_id',
         'course_id',
+        'topic_id',
+        'test_type',
         'total_questions',
         'completed_on',
         'answered_questions',
@@ -40,5 +42,10 @@ class Marks extends Model
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id', 'course_id');
+    }
+
+    public function topic()
+    {
+        return $this->belongsTo(CourseTopic::class, 'topic_id', 'topic_id');
     }
 }

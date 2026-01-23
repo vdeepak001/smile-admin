@@ -16,6 +16,7 @@ class Create extends Component
     public $start_date;
     public $end_date;
     public $batch_type = 1;
+    public $final_test_questions_count;
     public $availableCourses = [];
 
    
@@ -52,6 +53,7 @@ class Create extends Component
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'batch_type' => 'required|integer|in:1,2,3',
+            'final_test_questions_count' => 'nullable|integer|min:1',
         ];
     }
 
@@ -72,6 +74,7 @@ class Create extends Component
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'batch_type' => $this->batch_type,
+            'final_test_questions_count' => $this->final_test_questions_count,
             'active_status' => true,
             'created_by' => auth()->user()->name ?? 'System',
         ]);

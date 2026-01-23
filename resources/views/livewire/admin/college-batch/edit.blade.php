@@ -125,29 +125,43 @@
                                     Batch Type <span class="text-red-500">*</span>
                                 </label>
                                 <div class="grid grid-cols-3 gap-4">
-                                    <label wire:click="setBatchType(1)" class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
+                                    <label wire:click="setBatchType(1)" class="relative flex flex-col items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
                                         {{ $batch_type == 1 ? 'border-purple-600 bg-purple-50' : 'border-gray-300 hover:border-purple-300' }}">
                                         <input type="radio" name="batch_type" value="1" {{ $batch_type == 1 ? 'checked' : '' }} class="sr-only">
                                         <div class="text-center">
                                             <div class="text-lg font-semibold {{ $batch_type == 1 ? 'text-purple-600' : 'text-gray-700' }}">Type 1</div>
+                                            <div class="text-xs mt-1 {{ $batch_type == 1 ? 'text-purple-500' : 'text-gray-500' }}">Only Final Test</div>
                                         </div>
                                     </label>
-                                    <label wire:click="setBatchType(2)" class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
+                                    <label wire:click="setBatchType(2)" class="relative flex flex-col items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
                                         {{ $batch_type == 2 ? 'border-indigo-600 bg-indigo-50' : 'border-gray-300 hover:border-indigo-300' }}">
                                         <input type="radio" name="batch_type" value="2" {{ $batch_type == 2 ? 'checked' : '' }} class="sr-only">
                                         <div class="text-center">
                                             <div class="text-lg font-semibold {{ $batch_type == 2 ? 'text-indigo-600' : 'text-gray-700' }}">Type 2</div>
+                                            <div class="text-xs mt-1 {{ $batch_type == 2 ? 'text-indigo-500' : 'text-gray-500' }}">Topic-wise Test & Final Test</div>
                                         </div>
                                     </label>
-                                    <label wire:click="setBatchType(3)" class="relative flex items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
+                                    <label wire:click="setBatchType(3)" class="relative flex flex-col items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all
                                         {{ $batch_type == 3 ? 'border-pink-600 bg-pink-50' : 'border-gray-300 hover:border-pink-300' }}">
                                         <input type="radio" name="batch_type" value="3" {{ $batch_type == 3 ? 'checked' : '' }} class="sr-only">
                                         <div class="text-center">
                                             <div class="text-lg font-semibold {{ $batch_type == 3 ? 'text-pink-600' : 'text-gray-700' }}">Type 3</div>
+                                            <div class="text-xs mt-1 {{ $batch_type == 3 ? 'text-pink-500' : 'text-gray-500' }}">Pre-Test, Topic-wise Test & Final Test</div>
                                         </div>
                                     </label>
                                 </div>
                                 @error('batch_type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Final Test Questions Count -->
+                            <div>
+                                <label for="final_test_questions_count" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Final Test Questions Count
+                                </label>
+                                <input type="number" id="final_test_questions_count" wire:model="final_test_questions_count"
+                                    class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Enter number of questions for final test" min="1">
+                                @error('final_test_questions_count') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <!-- Active Status Checkbox -->

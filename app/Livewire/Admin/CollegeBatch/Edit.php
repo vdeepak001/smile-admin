@@ -18,6 +18,7 @@ class Edit extends Component
     public $start_date;
     public $end_date;
     public $batch_type;
+    public $final_test_questions_count;
     public $active_status = true;
     public $availableCourses = [];
 
@@ -35,6 +36,7 @@ class Edit extends Component
         $this->start_date = $this->batch->start_date->format('Y-m-d');
         $this->end_date = $this->batch->end_date->format('Y-m-d');
         $this->batch_type = (int) $this->batch->batch_type;
+        $this->final_test_questions_count = $this->batch->final_test_questions_count;
         $this->active_status = (bool) $this->batch->active_status;
         
         // Extract year from batch_id (format: CODE-YEAR-SEQ)
@@ -67,6 +69,7 @@ class Edit extends Component
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'batch_type' => 'required|integer|in:1,2,3',
+            'final_test_questions_count' => 'nullable|integer|min:1',
         ];
     }
 
@@ -86,6 +89,7 @@ class Edit extends Component
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'batch_type' => $this->batch_type,
+            'final_test_questions_count' => $this->final_test_questions_count,
             'active_status' => $this->active_status,
             'updated_by' => auth()->user()->name ?? 'System',
         ]);

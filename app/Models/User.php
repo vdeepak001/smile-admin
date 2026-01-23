@@ -31,6 +31,7 @@ class User extends Authenticatable
         'last_name',
         'phone_number',
         'avatar',
+        'resume_path',
         'active_status',
         'college_id',
         'created_by',
@@ -38,6 +39,7 @@ class User extends Authenticatable
         'college_rights',
         'course_rights',
         'students_rights',
+        'resume_data',
     ];
 
     /**
@@ -70,6 +72,7 @@ class User extends Authenticatable
             'course_rights' => 'boolean',
             'students_rights' => 'boolean',
             'deleted_at' => 'datetime',
+            'resume_data' => 'array',
         ];
     }
 
