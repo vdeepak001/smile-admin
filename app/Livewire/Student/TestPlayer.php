@@ -25,6 +25,11 @@ class TestPlayer extends Component
     public $testStartTime;
     public $testDuration; // in minutes
     public $timeRemaining; // in seconds
+    
+    // Per-question timer properties (for topic tests)
+    public $questionStartTime; // timestamp when current question was started
+    public $questionTimers = []; // [question_id => time_in_seconds]
+    public $currentQuestionTime = 0; // current question elapsed time in seconds
 
     public function mount($test_type, $context_id)
     {
@@ -33,6 +38,7 @@ class TestPlayer extends Component
 
         $this->loadQuestions();
         $this->initializeTimer();
+        $this->startQuestionTimer();
     }
 
     public function initializeTimer()
@@ -174,23 +180,75 @@ class TestPlayer extends Component
         // Just store the selected answer without validation
         $this->answers[$questionId] = $option;
     }
+    
+    public function startQuestionTimer()
+    {
+        if ($this->testType === 'topic' && !empty($this->questionIds)) {
+            $currentQuestionId = $this->questionIds[$this->currentQuestionIndex] ?? null;
+            if ($currentQuestionId) {
+                // Store current timestamp
+                $this->questionStartTime = now()->timestamp;
+                // Initialize timer for this question if not exists
+                if (!isset($this->questionTimers[$currentQuestionId])) {
+                    $this->questionTimers[$currentQuestionId] = 0;
+                }
+            }
+        }
+    }
+    
+    public function pauseQuestionTimer()
+    {
+        if ($this->testType === 'topic' && $this->questionStartTime && !empty($this->questionIds)) {
+            $currentQuestionId = $this->questionIds[$this->currentQuestionIndex] ?? null;
+            if ($currentQuestionId) {
+                // Calculate elapsed time since question started
+                $elapsed = now()->timestamp - $this->questionStartTime;
+                // Add to accumulated time for this question
+                if (!isset($this->questionTimers[$currentQuestionId])) {
+                    $this->questionTimers[$currentQuestionId] = 0;
+                }
+                $this->questionTimers[$currentQuestionId] += $elapsed;
+                // Reset start time
+                $this->questionStartTime = null;
+            }
+        }
+    }
+    
+    public function updateCurrentQuestionTime()
+    {
+        if ($this->testType === 'topic' && $this->questionStartTime && !empty($this->questionIds)) {
+            $currentQuestionId = $this->questionIds[$this->currentQuestionIndex] ?? null;
+            if ($currentQuestionId) {
+                // Calculate current elapsed time
+                $elapsed = now()->timestamp - $this->questionStartTime;
+                $accumulated = $this->questionTimers[$currentQuestionId] ?? 0;
+                $this->currentQuestionTime = $accumulated + $elapsed;
+            }
+        }
+    }
 
     public function previousQuestion()
     {
         if ($this->currentQuestionIndex > 0) {
+            $this->pauseQuestionTimer();
             $this->currentQuestionIndex--;
+            $this->startQuestionTimer();
         }
     }
 
     public function nextQuestion()
     {
         if ($this->currentQuestionIndex < $this->totalQuestionsCount - 1) {
+            $this->pauseQuestionTimer();
             $this->currentQuestionIndex++;
+            $this->startQuestionTimer();
         }
     }
 
     public function submitTest()
     {
+        // Pause the current question timer before finishing
+        $this->pauseQuestionTimer();
         $this->finishTest();
     }
 
@@ -226,6 +284,9 @@ class TestPlayer extends Component
                 
                 $isCorrect = $question->right_answer == $option;
                 $sequence = array_search($questionId, $this->questionIds) + 1;
+                
+                // Get time taken for this question (for topic tests)
+                $timeTaken = $this->questionTimers[$questionId] ?? 0;
 
                 \App\Models\Answered::create([
                     'user_id' => auth()->id(),
@@ -236,7 +297,7 @@ class TestPlayer extends Component
                     'sequence' => $sequence,
                     'answered_choice' => (string)$option,
                     'answered_status' => $isCorrect ? 'correct' : 'incorrect',
-                    'time_taken' => 0,
+                    'time_taken' => $timeTaken,
                     'answered_date' => now(),
                 ]);
             }
